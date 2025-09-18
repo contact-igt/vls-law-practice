@@ -1,0 +1,55 @@
+.formcardbottom form {
+    width: 600px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    padding: 30px;
+    border-radius: 20px;
+    background-color: #ffff;
+
+}
+
+.formcardbottom {
+    display: flex;
+    justify-content: center;
+}
+
+
+.inputgrp {
+    margin-top: 15px;
+}
+
+.inputgrp label {
+    font-size: 14px;
+    color: #000 !important;
+
+}
+
+.inputgrp input {
+    padding: 15px;
+    border: 2px solid #b20a0a;
+    margin: 15px 0px;
+    font-size: 17px;
+}
+
+.formtitle p {
+    font-size: 15px;
+    text-align: center;
+    margin-top: 10px;
+    color: #787373;
+}
+
+.formtitle h4 {
+    font-size: 30px;
+    text-align: center;
+    color: #000;
+}
+
+
+
+@media (width < 768x) {
+
+    .inputgrp input {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+}

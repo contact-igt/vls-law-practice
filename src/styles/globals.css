@@ -1,0 +1,84 @@
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: "Inter", sans-serif !important;
+
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+
+small {
+  color: red;
+  font-weight: 600;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #b20a0a !important;
+  box-shadow: none !important;
+  color: #fff;
+  border: none !important;
+}
+
+.accordion-button:focus {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.accordion-button {
+  font-weight: 600;
+  padding: 25px;
+  font-size: 18px;
+}
+
+.accordion-body {
+  padding: 25px;
+  font-size: 16px;
+  color: #b20a0a;
+  font-weight: 600;
+
+}
+
+section {
+  padding: 60px 0px;
+}
+
+input:focus {
+  box-shadow: none !important;
+  border: 2px solid #b20a0a !important;
+}
+
+
+
+@media (width < 768px) {
+
+  .accordion-button,
+  .accordion-body {
+    padding: 20px;
+    font-size: 15px;
+  }
+
+
+
+}

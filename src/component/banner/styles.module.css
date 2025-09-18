@@ -1,0 +1,48 @@
+.bannertitle p {
+    color: #ffff !important;
+    text-align: start;
+}
+
+.bannertitle h4 {
+    text-align: start;
+}
+
+.pointwise h5 {
+
+    font-size: 18px;
+    margin: 0px;
+    width: 600px;
+}
+
+.datetime {
+    background-color: #b20a0a;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.bannersec {
+    background: url("/assets/home/banner-img.jpg");
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #ffff;
+}
+
+
+@media (width < 1200px) {
+
+    .pointwise h5 {
+        width: 100%;
+        font-size: 16px;
+    }
+
+}
+
+@media (width < 768px) {
+
+    .datetime h6 {
+        font-size: 14px;
+    }
+}
