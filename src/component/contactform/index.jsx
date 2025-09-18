@@ -77,7 +77,7 @@ const ContactForm = () => {
             });
 
             fetch(
-              "https://script.google.com/macros/s/AKfycbxzRMYEnxrYd-iqx8kCdgQZKjIz2JS7w7jdOIo8UwzbQIQyuaSKHkJqduK56w7E0cs_/exec",
+              "https://script.google.com/macros/s/AKfycby9rETzcndIQE3EGqT9B12B0qHyjRTOidLTzRDZKYkKdO8Mk3OY-QcfjVravUB6NfcS/exec",
               {
                 method: "POST",
                 headers: {
