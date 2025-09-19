@@ -156,9 +156,9 @@ const Footer = () => {
       <div className={styles.whatsappicon}>
         <a href="http://wa.me/+919500207811" target="blank">
           <Image
-            src={"/assets/home/whatsapp_icon.png"}
-            width={50}
-            height={50}
+            src={"/assets/home/whatsapp.png"}
+            width={60}
+            height={60}
             alt="whtasapp-logo"
           />
         </a>
