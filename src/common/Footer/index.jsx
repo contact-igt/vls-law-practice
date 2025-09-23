@@ -108,14 +108,14 @@ const Footer = () => {
                     </a>
                     <a
                       className={styles.address_box}
-                      href="tel:+919500207811"
+                      href="tel:+919500025216"
                       style={{ paddingTop: "15px" }}
                     >
                       <img
                         src="\assets\home\call.png"
                         className="img-fluid face"
                       />
-                      <p>+91 95002 07811</p>
+                      <p>+91 9500025216</p>
                     </a>
                   </div>
                 </div>
