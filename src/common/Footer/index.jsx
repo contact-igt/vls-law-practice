@@ -125,7 +125,7 @@ const Footer = () => {
 
           <div className={styles.footer_section}>
             <div className="container">
-              <div className="d-md-flex justify-content-between ">
+              <div className="d-md-flex justify-content-between">
                 <p className="text-md-start text-center">
                   &copy; <span id="displayYear"></span>
                   {new Date().getFullYear()} VLS Law Academy. All rights
@@ -154,7 +154,7 @@ const Footer = () => {
       </section>
 
       <div className={styles.whatsappicon}>
-        <a href="http://wa.me/+919500207811" target="blank">
+        <a href="http://wa.me/+919500025216" target="blank">
           <Image
             src={"/assets/home/whatsapp.png"}
             width={60}
