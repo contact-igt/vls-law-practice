@@ -25,8 +25,7 @@ const RegisterSticky = ({ scrollToContactForm }) => {
             <div className="col-lg-6 d-lg-block d-none">
               <div className={styles.meuntitle}>
                 <h4>
-                  Decoding of Practice — 2 Hour Masterclass On Saturday, Sept
-                  20, 2025{" "}
+                  Decoding of Practice — 2 Hour Masterclass On Saturday, Oct 04, 2025{" "}
                 </h4>
                 <h6>
                   Offer Will Expire in -{" "}
