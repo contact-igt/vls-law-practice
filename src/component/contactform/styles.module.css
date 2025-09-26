@@ -44,6 +44,19 @@
 }
 
 
+.inputmobilecode {
+    background: #ffff;
+    color: #615f5f;
+    width: 71px;
+    border-radius: 6px 0px 0px 6px;
+    top: -15px;
+}
+
+
+.inputmobile {
+    padding-left: 82px !important; 
+}
+
 
 @media (width < 768x) {
 
