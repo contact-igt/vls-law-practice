@@ -71,6 +71,22 @@ const ContactForm = () => {
               Payment_Status: "Paid",
             };
 
+            const whatsappPayload = {
+              phone: `91${values?.mobile}`,
+              name: values?.name,
+              amount: order?.amount / 100,
+              programm_name: "2-hour Decoding of Practice masterclass",
+              schedule: "Saturday, Oct 04, 2025 10:30 AM – 12:30 PM IST",
+            };
+
+            handleWhatsappMessage(
+              whatsappPayload?.phone,
+              whatsappPayload?.name,
+              whatsappPayload?.amount,
+              whatsappPayload?.programm_name,
+              whatsappPayload?.schedule
+            );
+
             const params = new URLSearchParams();
             Object.keys(formData).forEach((key) => {
               params.append(key, formData[key]);
@@ -124,6 +140,53 @@ const ContactForm = () => {
     },
   });
 
+  const handleWhatsappMessage = async (
+    phone_value,
+    name_value,
+    amount_value,
+    programm_name_value,
+    schedule_value
+  ) => {
+    const apiPayload = {
+      phone: phone_value,
+      name: name_value || "Student",
+      amount: amount_value,
+      programm_name: programm_name_value,
+      schedule: schedule_value,
+    };
+
+    try {
+      const res = await fetch("/api/sendWhatsapp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(apiPayload),
+      });
+
+      let data;
+
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        const text = await res.text();
+        console.error("Server returned non-JSON response:", text);
+        console.log("Server returned unexpected response. Check console.");
+        return;
+      }
+
+      if (data.success) {
+        console.log(`WhatsApp confirmation sent to ${phone_value}!`);
+      } else {
+        console.error("Error sending message:", data.error);
+        console.log(
+          "Error sending WhatsApp message. Check console for details."
+        );
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      console.log("Server error. Please try again later.");
+    }
+  };
+
   return (
     <div className={styles?.formcardbottom} id="contact_form">
       <form
@@ -170,12 +233,19 @@ const ContactForm = () => {
           <label>
             Mobile<span>*</span>
           </label>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Mobile"
-            {...Formik.getFieldProps("mobile")}
-          />
+          <div className="position-relative">
+            <input
+              type="text"
+              class={`${styles.inputmobile} form-control `}
+              placeholder="Mobile"
+              {...Formik.getFieldProps("mobile")}
+            />
+            <input
+              className={`${styles.inputmobilecode} form-control position-absolute`}
+              readOnly
+              value={"+91"}
+            />
+          </div>
           {Formik.touched.mobile && Formik.errors.mobile && (
             <small>{Formik.errors.mobile}</small>
           )}
