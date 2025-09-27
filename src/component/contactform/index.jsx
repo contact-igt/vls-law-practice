@@ -34,29 +34,29 @@ const ContactForm = () => {
     }),
 
     onSubmit: async (values, { resetForm }) => {
-      const resp = await fetch("/api/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: HomePage?.razorpay?.amount }), // rupees
-      });
+      // const resp = await fetch("/api/create-order", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ amount: HomePage?.razorpay?.amount }), // rupees
+      // });
 
-      const order = await resp.json();
+      // const order = await resp.json();
 
-      console.log("Order response:", order);
+      // console.log("Order response:", order);
 
-      if (!resp.ok) {
-        console.error("Create order failed", order);
-        setloading(false);
-        router.replace("/error");
-        return;
-      }
+      // if (!resp.ok) {
+      //   console.error("Create order failed", order);
+      //   setloading(false);
+      //   router.replace("/error");
+      //   return;
+      // }
 
       const options = {
-        key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
+        key: "rzp_test_RFnGsVwVIs0EOi",
+        amount: 99 * 100,
+        currency: "INR",
         name: values?.name,
-        order_id: order.id,
+        // order_id: order.id,
         description: HomePage?.razorpay?.title,
         handler: function (response) {
           setloading(true);
@@ -65,7 +65,7 @@ const ContactForm = () => {
               Name: values?.name,
               Email: values?.email,
               Mobile: values?.mobile,
-              Amount: order?.amount / 100,
+              Amount: 99,
               Razorpay_Transaction_Id: response?.razorpay_payment_id,
               Payment_Status: "Paid",
             };
@@ -73,7 +73,7 @@ const ContactForm = () => {
             const whatsappPayload = {
               phone: `91${values?.mobile}`,
               name: values?.name,
-              amount: order?.amount / 100,
+              amount: 99,
               programm_name: "2-hour Decoding of Practice masterclass",
               schedule: "Saturday, Oct 04, 2025 10:30 AM – 12:30 PM IST",
             };
