@@ -6,7 +6,6 @@ import Title from "@/common/Title";
 import { HomePage } from "@/constants/Home";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import axios from "axios";
 
 const ContactForm = () => {
   const router = useRouter();
