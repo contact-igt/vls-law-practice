@@ -75,7 +75,7 @@ const ContactForm = () => {
               name: values?.name,
               amount: order?.amount / 100,
               programm_name: "2-hour Decoding of Practice masterclass",
-              schedule: "Saturday, Oct 04, 2025 10:30 AM – 12:30 PM IST",
+              schedule: "Saturday, Oct 11, 2025 10:30 AM – 12:30 PM IST",
             };
 
             handleWhatsappMessage(
