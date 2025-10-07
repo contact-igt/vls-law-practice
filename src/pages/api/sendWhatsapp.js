@@ -1,16 +1,26 @@
 // pages/api/sendWhatsapp.js
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { phone, name, amount, programm_name, schedule } = req.body;
+  const { phone, name, amount, programm_name, schedule, platform, link_date } =
+    req.body;
 
-  if (!phone || !amount || !programm_name || !schedule) {
+  if (
+    !phone ||
+    !name ||
+    !amount ||
+    !programm_name ||
+    !schedule ||
+    !platform ||
+    !link_date
+  ) {
     return res.status(400).json({ error: "Missing fields" });
   }
 
-  const token = `7dd8121386e580c872816b336b80723eebdcb68d31950278df962dde22127dd8be7d27a6964922c6701fb1ef937ba316e10ca355e6de34cf02c885516e31455a`;
+  const token = `7dd8121386e580c872816b336b80723eebdcb68d31950278df962dde22127dd87b9bdf0721d57cdb502346ea16e23e0a949a3b60e70256124c7d4fbac9cd0341`;
   const apiUrl = `https://backend.askeva.io/v1/message/send-message?token=${token}`;
 
   try {
@@ -21,8 +31,11 @@ export default async function handler(req, res) {
         to: phone,
         type: "template",
         template: {
-          language: { policy: "deterministic", code: "en" },
-          name: "confirmation_message",
+          name: "register_message",
+          language: {
+            policy: "deterministic",
+            code: "en",
+          },
           components: [
             {
               type: "body",
@@ -31,6 +44,8 @@ export default async function handler(req, res) {
                 { type: "text", text: String(amount) },
                 { type: "text", text: programm_name },
                 { type: "text", text: schedule },
+                { type: "text", text: platform },
+                { type: "text", text: link_date },
               ],
             },
           ],
