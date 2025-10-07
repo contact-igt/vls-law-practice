@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import Title from "@/common/Title";
 import { HomePage } from "@/constants/Home";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ContactForm = () => {
   const router = useRouter();
@@ -76,6 +76,8 @@ const ContactForm = () => {
               amount: order?.amount / 100,
               programm_name: "2-hour Decoding of Practice masterclass",
               schedule: "Saturday, Oct 11, 2025 10:30 AM – 12:30 PM IST",
+              platform: "Google Meet",
+              link_date: "Friday, 10 Oct",
             };
 
             handleWhatsappMessage(
@@ -83,7 +85,9 @@ const ContactForm = () => {
               whatsappPayload?.name,
               whatsappPayload?.amount,
               whatsappPayload?.programm_name,
-              whatsappPayload?.schedule
+              whatsappPayload?.schedule,
+              whatsappPayload?.platform,
+              whatsappPayload?.link_date
             );
 
             const params = new URLSearchParams();
@@ -144,7 +148,9 @@ const ContactForm = () => {
     name_value,
     amount_value,
     programm_name_value,
-    schedule_value
+    schedule_value,
+    platform_value,
+    link_date_value
   ) => {
     const apiPayload = {
       phone: phone_value,
@@ -152,6 +158,8 @@ const ContactForm = () => {
       amount: amount_value,
       programm_name: programm_name_value,
       schedule: schedule_value,
+      platform: platform_value,
+      link_date: link_date_value,
     };
 
     try {
