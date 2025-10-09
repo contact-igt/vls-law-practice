@@ -6,10 +6,12 @@ import Title from "@/common/Title";
 import { HomePage } from "@/constants/Home";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
 
 const ContactForm = () => {
   const router = useRouter();
-  const [loading, setloading] = useState(false);
+  const { mutate: registerMutate } = AcademyRegisterQuery();
+  const [isLoading, setisLoading] = useState(false);
 
   const Formik = useFormik({
     initialValues: {
@@ -46,8 +48,8 @@ const ContactForm = () => {
 
       if (!resp.ok) {
         console.error("Create order failed", order);
-        setloading(false);
         router.replace("/error");
+        setisLoading(false);
         return;
       }
 
@@ -59,16 +61,59 @@ const ContactForm = () => {
         order_id: order.id,
         description: HomePage?.razorpay?.title,
         handler: function (response) {
-          setloading(true);
           if (response?.razorpay_payment_id) {
+            setisLoading(true);
+
             const formData = {
               Name: values?.name,
               Email: values?.email,
-              Mobile: values?.mobile,
+              Mobile: `91${values?.mobile}`,
               Amount: order?.amount / 100,
               Razorpay_Transaction_Id: response?.razorpay_payment_id,
               Payment_Status: "Paid",
             };
+
+            const apiPayload = {
+              name: values?.name ? values?.name : "",
+              email: values?.email,
+              mobile: `91${values?.mobile}`,
+              amount: order?.amount / 100,
+              programm_date: "2025-10-11",
+              razorpay_order_id: response.razorpay_order_id
+                ? response.razorpay_order_id
+                : "",
+              razorpay_payment_id: response.razorpay_payment_id
+                ? response.razorpay_payment_id
+                : "",
+              razorpay_signature: response.razorpay_signature
+                ? response.razorpay_signature
+                : "",
+              payment_status: "paid",
+              captured: response.captured ? response.captured : "",
+              page_name: "decoding-of-law-practice",
+            };
+
+            registerMutate(
+              { value: apiPayload },
+              {
+                onSuccess: () => {
+                  setisLoading(false);
+                  resetForm();
+                  router.replace("/thank-you");
+                  localStorage.setItem(
+                    "PaymentDeatls",
+                    JSON.stringify(formData)
+                  );
+                },
+              },
+              {
+                onError: () => {
+                  setisLoading(false);
+                  resetForm();
+                  router.replace("/error");
+                },
+              }
+            );
 
             const whatsappPayload = {
               phone: `91${values?.mobile}`,
@@ -89,40 +134,9 @@ const ContactForm = () => {
               whatsappPayload?.platform,
               whatsappPayload?.link_date
             );
-
-            const params = new URLSearchParams();
-            Object.keys(formData).forEach((key) => {
-              params.append(key, formData[key]);
-            });
-
-            fetch(
-              "https://script.google.com/macros/s/AKfycby9rETzcndIQE3EGqT9B12B0qHyjRTOidLTzRDZKYkKdO8Mk3OY-QcfjVravUB6NfcS/exec",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: params.toString(),
-              }
-            )
-              .then((res) => {
-                if (!res.ok) throw new Error("Submission failed");
-                return res.json();
-              })
-              .then(() => {
-                resetForm();
-                setloading(false);
-                router.replace("/thank-you");
-                localStorage.setItem("PaymentDeatls", JSON.stringify(formData));
-              })
-              .catch(() => {
-                resetForm();
-                router.replace("/error");
-                setloading(false);
-              });
           } else {
             router.replace("/error");
-            setloading(false);
+            setisLoading(false);
           }
         },
         prefill: {
@@ -259,7 +273,7 @@ const ContactForm = () => {
         </div>
 
         <div className="mt-5 d-md-flex justify-content-center ">
-          <Button name={"SUBMIT"} isLoading={loading} type={"submit"} />
+          <Button name={"SUBMIT"} isLoading={isLoading} type={"submit"} />
         </div>
       </form>
     </div>
