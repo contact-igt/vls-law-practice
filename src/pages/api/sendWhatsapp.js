@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         to: phone,
         type: "template",
         template: {
-          name: "register_message",
+          name: "event_remainder",
           language: {
             policy: "deterministic",
             code: "en",

@@ -168,7 +168,7 @@ const ContactForm = () => {
   ) => {
     const apiPayload = {
       phone: phone_value,
-      name: name_value || "Student",
+      name: name_value ? name_value : "Student",
       amount: amount_value,
       programm_name: programm_name_value,
       schedule: schedule_value,
