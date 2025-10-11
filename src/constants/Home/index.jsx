@@ -155,6 +155,6 @@ export const HomePage = {
 
   razorpay: {
     title: "Decoding of Law Practice",
-    amount: 1,
+    amount: 99,
   },
 };
