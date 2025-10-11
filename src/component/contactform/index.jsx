@@ -7,6 +7,7 @@ import { HomePage } from "@/constants/Home";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
+import { Popup } from "@/common/Popup";
 
 const ContactForm = () => {
   const router = useRouter();
@@ -78,7 +79,7 @@ const ContactForm = () => {
               email: values?.email,
               mobile: `91${values?.mobile}`,
               amount: order?.amount / 100,
-              programm_date: "2025-10-11",
+              programm_date: "2025-10-25",
               razorpay_order_id: response.razorpay_order_id
                 ? response.razorpay_order_id
                 : "",
@@ -97,13 +98,8 @@ const ContactForm = () => {
               { value: apiPayload },
               {
                 onSuccess: () => {
-                  setisLoading(false);
                   resetForm();
-                  router.replace("/thank-you");
-                  localStorage.setItem(
-                    "PaymentDeatls",
-                    JSON.stringify(formData)
-                  );
+                  afterRegisterSuccessufull(formData);
                 },
               },
               {
@@ -120,9 +116,9 @@ const ContactForm = () => {
               name: values?.name,
               amount: order?.amount / 100,
               programm_name: "2-hour Decoding of Practice masterclass",
-              schedule: "Saturday, Oct 11, 2025 10:30 AM – 12:30 PM IST",
+              schedule: "Saturday, Oct 25, 2025 10:30 AM – 12:30 PM IST",
               platform: "Google Meet",
-              link_date: "Friday, 10 Oct",
+              link_date: "Friday, 24 Oct",
             };
 
             handleWhatsappMessage(
@@ -151,6 +147,7 @@ const ContactForm = () => {
 
       razor.on("payment.failed", function () {
         router.replace("/error");
+        setisLoading(false);
       });
 
       razor.open();
@@ -208,75 +205,104 @@ const ContactForm = () => {
     }
   };
 
+  const afterRegisterSuccessufull = (formData) => {
+    setTimeout(() => {
+      router.replace("/thank-you");
+      localStorage.setItem("PaymentDeatls", JSON.stringify(formData));
+      setisLoading(false);
+    }, 5000);
+  };
+
+  const handleTogglecontactForm = () => {
+    setisLoading(!isLoading);
+  };
+
   return (
-    <div className={styles?.formcardbottom} id="contact_form">
-      <form
-        id="contactForm"
-        className="contact-form"
-        onSubmit={Formik.handleSubmit}
-      >
-        <div className={styles.formtitle}>
-          <Title
-            title1={"Register"}
-            spantitle={"Now"}
-            subtitle={`( Get Your Legal — Career Roadmap )`}
-          />
-        </div>
-        <div className={styles.inputgrp}>
-          <label>Name</label>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Name"
-            {...Formik.getFieldProps("name")}
-          />
-          {Formik.touched.name && Formik.errors.name && (
-            <small>{Formik.errors.name}</small>
-          )}
-        </div>
-
-        <div className={styles.inputgrp}>
-          <label>
-            Email<span>*</span>
-          </label>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Email"
-            {...Formik.getFieldProps("email")}
-          />
-          {Formik.touched.email && Formik.errors.email && (
-            <small>{Formik.errors.email}</small>
-          )}
-        </div>
-
-        <div className={styles.inputgrp}>
-          <label>
-            Mobile<span>*</span>
-          </label>
-          <div className="position-relative">
-            <input
-              type="text"
-              class={`${styles.inputmobile} form-control `}
-              placeholder="Mobile"
-              {...Formik.getFieldProps("mobile")}
-            />
-            <input
-              className={`${styles.inputmobilecode} form-control position-absolute`}
-              readOnly
-              value={"+91"}
+    <>
+      <div className={styles?.formcardbottom} id="contact_form">
+        <form
+          id="contactForm"
+          className="contact-form"
+          onSubmit={Formik.handleSubmit}
+        >
+          <div className={styles.formtitle}>
+            <Title
+              title1={"Register"}
+              spantitle={"Now"}
+              subtitle={`( Get Your Legal — Career Roadmap )`}
             />
           </div>
-          {Formik.touched.mobile && Formik.errors.mobile && (
-            <small>{Formik.errors.mobile}</small>
-          )}
-        </div>
+          <div className={styles.inputgrp}>
+            <label>Name</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Name"
+              {...Formik.getFieldProps("name")}
+            />
+            {Formik.touched.name && Formik.errors.name && (
+              <small>{Formik.errors.name}</small>
+            )}
+          </div>
 
-        <div className="mt-5 d-md-flex justify-content-center ">
-          <Button name={"SUBMIT"} isLoading={isLoading} type={"submit"} />
+          <div className={styles.inputgrp}>
+            <label>
+              Email<span>*</span>
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Email"
+              {...Formik.getFieldProps("email")}
+            />
+            {Formik.touched.email && Formik.errors.email && (
+              <small>{Formik.errors.email}</small>
+            )}
+          </div>
+
+          <div className={styles.inputgrp}>
+            <label>
+              Mobile<span>*</span>
+            </label>
+            <div className="position-relative">
+              <input
+                type="text"
+                class={`${styles.inputmobile} form-control `}
+                placeholder="Mobile"
+                {...Formik.getFieldProps("mobile")}
+              />
+              <input
+                className={`${styles.inputmobilecode} form-control position-absolute`}
+                readOnly
+                value={"+91"}
+              />
+            </div>
+            {Formik.touched.mobile && Formik.errors.mobile && (
+              <small>{Formik.errors.mobile}</small>
+            )}
+          </div>
+
+          <div className="mt-5 d-md-flex justify-content-center ">
+            <Button name={"SUBMIT"} isLoading={isLoading} type={"submit"} />
+          </div>
+        </form>
+      </div>
+      <Popup
+        open={isLoading}
+        onClose={() => {
+          handleTogglecontactForm();
+        }}
+      >
+        <div className={styles.loadingPopup}>
+          <h4>⚠️ Do Not Close or Refresh</h4>
+          <p>
+            Your payment has been received. We are completing your registration.
+            Please stay on this page until the process is complete.
+          </p>
+          <h6>⏳ Processing... Please wait.</h6>
         </div>
-      </form>
-    </div>
+      </Popup>
+    </>
   );
 };
 
