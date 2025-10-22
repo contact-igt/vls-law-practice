@@ -60,7 +60,7 @@ const ContactForm = () => {
         currency: order.currency,
         name: values?.name,
         order_id: order.id,
-        description: HomePage?.razorpay?.title,
+        description: `${HomePage?.razorpay?.title} (99 + 18% Tax = ₹117)`,
         handler: function (response) {
           if (response?.razorpay_payment_id) {
             setisLoading(true);
