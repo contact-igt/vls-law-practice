@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import Title from "@/common/Title";
 import { HomePage } from "@/constants/Home";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
 import { Popup } from "@/common/Popup";
 
@@ -61,10 +61,11 @@ const ContactForm = () => {
         name: values?.name,
         order_id: order.id,
         description: `${HomePage?.razorpay?.title} (99 + 18% Tax = ₹117)`,
-        handler: function (response) {
+        handler: async function (response) {
           if (response?.razorpay_payment_id) {
             setisLoading(true);
-
+            const ipResponse = await fetch("https://api.ipify.org?format=json");
+            const ipData = await ipResponse.json();
             const formData = {
               Name: values?.name,
               Email: values?.email,
@@ -92,14 +93,25 @@ const ContactForm = () => {
               payment_status: "paid",
               captured: response.captured ? response.captured : "",
               page_name: "decoding-of-law-practice",
+              ip_address: ipData?.ip,
+              utm_source: localStorage.getItem("utm_source"),
+              utm_medium: localStorage.getItem("utm_medium"),
+              utm_campaign: localStorage.getItem("utm_campaign"),
+              utm_term: localStorage.getItem("utm_term"),
+              utm_content: localStorage.getItem("utm_content"),
             };
 
             registerMutate(
               { value: apiPayload },
               {
                 onSuccess: () => {
+                  const params = new URLSearchParams();
+                  Object.keys(apiPayload).forEach((key) => {
+                    params.append(key, apiPayload[key]);
+                  });
                   resetForm();
                   afterRegisterSuccessufull(formData);
+                  handleGoogleSheetForm(params);
                 },
               },
               {
@@ -199,6 +211,24 @@ const ContactForm = () => {
           "Error sending WhatsApp message. Check console for details."
         );
       }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      console.log("Server error. Please try again later.");
+    }
+  };
+
+  const handleGoogleSheetForm = async (formData) => {
+    try {
+      const sheetRes = await fetch(
+        "https://script.google.com/macros/s/AKfycbxobI0C2E-HTczBbbsyWSKNq5U5mXJn6WTBGjHOn48ppKaDTqtKzo7vyHGqpP0OEdmiDg/exec",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: formData.toString(),
+        }
+      );
     } catch (err) {
       console.error("Fetch error:", err);
       console.log("Server error. Please try again later.");

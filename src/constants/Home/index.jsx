@@ -51,7 +51,7 @@ export const HomePage = {
     {
       id: 4,
       value:
-        "Given only to attendees who complete the full session and are present for atleast 80% of the session",
+        "Certificates & Bonuse are given only to attendees who complete the full session and are present for atleast 80% of the session",
       icon: "shield-check",
     },
     {
