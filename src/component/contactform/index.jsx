@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import Title from "@/common/Title";
 import { HomePage } from "@/constants/Home";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
 import { Popup } from "@/common/Popup";
 
@@ -92,14 +92,24 @@ const ContactForm = () => {
               payment_status: "paid",
               captured: response.captured ? response.captured : "",
               page_name: "decoding-of-law-practice",
+              utm_source: localStorage.getItem("utm_source"),
+              utm_medium: localStorage.getItem("utm_medium"),
+              utm_campaign: localStorage.getItem("utm_campaign"),
+              utm_term: localStorage.getItem("utm_term"),
+              utm_content: localStorage.getItem("utm_content"),
             };
 
             registerMutate(
               { value: apiPayload },
               {
                 onSuccess: () => {
-                  resetForm();
+                  const params = new URLSearchParams();
+                  Object.keys(apiPayload).forEach((key) => {
+                    params.append(key, apiPayload[key]);
+                  });
+                  handleGoogleSheetForm(params);
                   afterRegisterSuccessufull(formData);
+                  resetForm();
                 },
               },
               {
@@ -199,6 +209,24 @@ const ContactForm = () => {
           "Error sending WhatsApp message. Check console for details."
         );
       }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      console.log("Server error. Please try again later.");
+    }
+  };
+
+  const handleGoogleSheetForm = async (formData) => {
+    try {
+      const sheetRes = await fetch(
+        "https://script.google.com/macros/s/AKfycbxobI0C2E-HTczBbbsyWSKNq5U5mXJn6WTBGjHOn48ppKaDTqtKzo7vyHGqpP0OEdmiDg/exec",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: formData.toString(),
+        }
+      );
     } catch (err) {
       console.error("Fetch error:", err);
       console.log("Server error. Please try again later.");
