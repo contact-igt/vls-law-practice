@@ -40,7 +40,7 @@ const ContactForm = () => {
       const resp = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 1 }), // rupees
+        body: JSON.stringify({ amount: HomePage?.razorpay?.amount }), // rupees
       });
 
       const order = await resp.json();
@@ -64,9 +64,7 @@ const ContactForm = () => {
         handler: async function (response) {
           if (response?.razorpay_payment_id) {
             setisLoading(true);
-            const ipResponse = await fetch(
-              "https://api.ipify.org?format=json"
-            );
+            const ipResponse = await fetch("https://api.ipify.org?format=json");
             const ipData = await ipResponse.json();
             const formData = {
               Name: values?.name,
@@ -111,9 +109,9 @@ const ContactForm = () => {
                   Object.keys(apiPayload).forEach((key) => {
                     params.append(key, apiPayload[key]);
                   });
-                  handleGoogleSheetForm(params);
-                  afterRegisterSuccessufull(formData);
                   resetForm();
+                  afterRegisterSuccessufull(formData);
+                  handleGoogleSheetForm(params);
                 },
               },
               {
