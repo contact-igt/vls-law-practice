@@ -126,7 +126,7 @@ const ContactForm = () => {
             const whatsappPayload = {
               phone: `91${values?.mobile}`,
               name: values?.name,
-              amount: order?.amount / 100,
+              amount: 99,
               programm_name: "2-hour Decoding of Practice masterclass",
               schedule: "Saturday, Nov 8, 2025 10:30 AM – 12:30 PM IST",
               platform: "Google Meet",
