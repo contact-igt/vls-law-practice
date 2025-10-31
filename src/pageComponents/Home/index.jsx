@@ -60,7 +60,7 @@ const HomePageComponent = () => {
 
       <RegisterSticky scrollToContactForm={scrollToContactForm} />
 
-      <Testimonial />
+      <Testimonial scrollToContactForm={scrollToContactForm} />
     </>
   );
 };

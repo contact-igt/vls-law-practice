@@ -76,7 +76,7 @@ small {
 }
 .slick-prev:hover,
 .slick-next:hover {
-  background-color: #b20a0a!important;
+  background-color: #b20a0a !important;
   transform: translateY(-50%) scale(1.1);
 }
 .slick-slider {
