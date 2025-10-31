@@ -4,8 +4,9 @@ import Title from "@/common/Title";
 import Slider from "react-slick";
 import TestimonialCard from "@/common/TestimonialCard";
 import { Popup } from "@/common/Popup";
+import Button from "@/common/Button";
 
-const Testimonial = () => {
+const Testimonial = ({scrollToContactForm}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
 
@@ -19,15 +20,15 @@ const Testimonial = () => {
   };
   const testimonialData = [
     {
-      name:"Our Students",
-      description:"Hi, I’m Akshara Privashini. I’ve been practicing in Ooty for the past two years. When I first came to Chennai, I was completely unsure about where to start — joining VLS Law Academy gave me the right direction and confidence to build my practice.",
+      name: "Our Students",
+      description: "Hi, I’m Akshara Prithashini. I’ve been practicing in Ooty for the past two years. When I first came to Chennai, I was completely unsure about where to start — joining VLS Law Academy gave me the right direction and confidence to build my practice.",
       imgUrl: "/assets/home/testimonial_bg1.jpg",
       videoUrl:
         "https://res.cloudinary.com/dd3olj1ax/video/upload/v1761892348/vls-testimonal3_ajrnrk.mp4",
     },
     {
-       name:"Harjit Idia",
-      description:"Hi, I’m Harjit Idia. Being part of VLS Law Academy’s Decoding of Practice course has been an incredible experience. I learned how to apply legal theory to real-world situations, and it’s truly boosted my confidence as a law student.",
+      name: "R.Jedidiah",
+      description: "Hi, I’m R.Jedidiah. Being part of VLS Law Academy’s Decoding of Practice course has been an incredible experience. I learned how to apply legal theory to real-world situations, and it’s truly boosted my confidence as a law student.",
       imgUrl: "/assets/home/testimonial_bg2.png",
       videoUrl:
         "https://res.cloudinary.com/dd3olj1ax/video/upload/v1761891831/vls-testimoanl1_ddcvpb.mp4",
@@ -53,8 +54,8 @@ const Testimonial = () => {
           slidesToShow: 2,
           slidesToScroll: 1,
           initialSlide: 1,
-          centerMode:true,
-                  centerPadding: "0px",
+          centerMode: true,
+          centerPadding: "0px",
           infinite: false,
         },
       },
@@ -66,8 +67,8 @@ const Testimonial = () => {
           slidesToScroll: 1,
           initialSlide: 1,
           infinite: false,
-                     centerMode: true,
-        centerPadding: "0px",
+          centerMode: true,
+          centerPadding: "0px",
         },
       },
       {
@@ -76,8 +77,8 @@ const Testimonial = () => {
           slidesToShow: 1,
           slidesToScroll: 1,
           initialSlide: 1,
-           centerMode: true,
-        centerPadding: "0px",
+          centerMode: true,
+          centerPadding: "0px",
           infinite: false,
         },
       },
@@ -87,8 +88,8 @@ const Testimonial = () => {
           slidesToShow: 1,
           slidesToScroll: 1,
           initialSlide: 1,
-           centerMode: true,
-        centerPadding: "0px",
+          centerMode: true,
+          centerPadding: "0px",
           infinite: false,
         },
       },
@@ -118,6 +119,16 @@ const Testimonial = () => {
               />
             ))}
           </Slider>
+        </div>
+        <div className="w-100 d-flex justify-content-center mt-5">
+          <Button
+            scrollToContactForm={scrollToContactForm}
+            name="Enroll Now ₹99"
+            icon={"calendar-check"}
+            icon_color={"#fff"}
+            bg_color="rgb(178, 10, 10)"
+            name_color="#fff"
+          />
         </div>
         <Popup open={isModalOpen} onClose={closeModal} variant="video">
           <button
