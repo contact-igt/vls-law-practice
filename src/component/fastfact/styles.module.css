@@ -12,8 +12,6 @@
     overflow: hidden;
     cursor: pointer;
     color: #000 !important;
-
-
 }
 
 .factpointcard:hover {
@@ -25,14 +23,13 @@
 .factpointcard p {
     font-size: 16px;
     font-weight: 500;
+    margin-bottom: 0 !important;
 
 }
 
 .factimg {
     height: 100%;
 }
-
-
 .factimg img {
     width: 100%;
     height: 100%;

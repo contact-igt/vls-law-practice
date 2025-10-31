@@ -59,7 +59,28 @@ small {
   font-weight: 600;
 
 }
-
+.slick-prev,
+.slick-next {
+  background-color: #b20a0a !important;
+  padding: 3px;
+  color: #fff;
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 100px;
+  display: block !important;
+  margin-top: 18px;
+  z-index: 99;
+}
+.slick-slide {
+  padding: 0 18px;
+  box-sizing: border-box;
+}
+.slick-slider{
+  width: 100%;
+}
+.sliderWrapper {
+  width: 100%;
+}
 section {
   padding: 60px 0px;
 }
