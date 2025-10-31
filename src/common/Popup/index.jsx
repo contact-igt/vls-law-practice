@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styles from "./styles.module.css";
 
-export const Popup = ({ children, open, onClose }) => {
+export const Popup = ({ children, open, onClose, variant="default" }) => {
   const wrapperRef = useRef(null);
 
   useEffect(() => {
@@ -21,8 +21,15 @@ export const Popup = ({ children, open, onClose }) => {
   if (!open) return null;
 
   return (
-    <div className={styles.bg}>
-      <div className={styles.wrapper} ref={wrapperRef}>
+   <div
+      className={`${styles.bg} ${variant === "video" ? styles.videoBg : ""}`}
+    >
+      <div
+        className={`${styles.wrapper} ${
+          variant === "video" ? styles.videoWrapper : ""
+        }`}
+        ref={wrapperRef}
+      >
         {children}
       </div>
     </div>

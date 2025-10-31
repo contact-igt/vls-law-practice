@@ -142,10 +142,12 @@
     position: fixed;
     right: 20px;
     bottom: 130px;
-    z-index: 9999;
+    z-index: 9998;
 
 }
-
+.whatsappicon img{
+    border-radius: 50%;
+}
 .address_box p {
     font-size: 15px;
     text-align: start;
