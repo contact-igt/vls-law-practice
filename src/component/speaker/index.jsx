@@ -10,7 +10,7 @@ const Speaker = ({ speakerdata }) => {
 
         <div className={`${styles.speakercard} mt-5`}>
           <div className="row">
-            <div className="col-lg-6">
+            <div className="col-lg-6 d-flex flex-column justify-content-end">
               <div className={styles.speakerinfo}>
                 <h3>{speakerdata?.name}</h3>
                 <h4>{speakerdata?.Education}</h4>

@@ -21,7 +21,7 @@ const FastFact = ({ factdata }) => {
               {factdata?.map((data, i) => (
                 <div className="col-xxl-6 col-xl-12">
                   <div
-                    className={`d-flex  my-3 gap-3 ${styles.factpointcard} `}
+                    className={`d-flex align-items-center  my-3 gap-3 ${styles.factpointcard} `}
                   >
                     <div className={styles.cardimg}>
                       <DynamicIcon
