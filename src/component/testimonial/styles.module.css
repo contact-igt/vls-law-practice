@@ -1,57 +1,35 @@
-.testimonialContainer {
-  /* display: flex;
-  align-items: center; */
-  margin: 50px auto;
-  max-width: 1100px;
-}
-
 .testim0nalcard {
   position: relative;
   width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
   border-radius: 12px;
   overflow: hidden;
   background: #000;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
-.sliderWrapper .slick-slide {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
+.testimonalsec {
+  background-color: #f9f2f2;
 }
-
-.slick-track {
-  display: flex !important;
-  align-items: center;
-}
-
-.sliderWrapper .slick-slide > div {
-  margin: 0 10px;
-}
-
-.slick-list {
-  margin: 0 -10px; /* compensates outer margins */
+.testimonialContainer{
+  margin-top: 40px;
 }
 .testimonal_thumbnail {
   position: relative;
-  background: url("/assets/home/testimonial_bg.jpg") center center / contain no-repeat;
-  aspect-ratio: 16 / 9;
+  background: url("/assets/testimonialimg.png") center center / contain no-repeat;
+  object-fit: contain;
+  height: 340px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   border-radius: 12px;
 }
-/* .videoPlayer {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 12px;
-  object-fit: contain;
-} */
+
 .playbtn {
-  width: 78px;
-  height: 78px;
+  width: 80px;
+  height: 80px;
   padding: 10px;
   background-color: #b20a0a;
   border-radius: 100px;
@@ -69,12 +47,25 @@
 .testimonal_video {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16/9;
   border-radius: 12px;
-  overflow: hidden;
   background: #000;
+  overflow: hidden;
+}
+.slideWrapperItem {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
+.slideWrapperItem > div {
+  width: 100% !important;
+  max-width: 500px;
+  margin: 0 auto;
+}
 .testimonal_video video {
   width: 100%;
   height: 100%;
@@ -82,7 +73,6 @@
   display: block;
   border-radius: 12px;
 }
-
 .closeButton {
     position: absolute;
     top: -20px;
@@ -103,28 +93,50 @@
     transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
     z-index: 100;
 }
-    .sectionTitle {
-        font-size: 56px;
-    }
 .closeButton:hover {
     background-color: #ff4d4d;
     color: white;
     transform: scale(1.1) rotate(90deg);
 }
-
-@media (width < 576px) {
-  .testimonialContainer{
-    width: 80% !important;
-  }
-  .playbtn {
-    width: 75px;
-    height: 75px;
-    padding: 28px;
-    padding-top: 15px;
-  }
+/* Force single slide to center properly */
+.sliderWrapper .slick-list {
+  display: flex !important;
+  justify-content: center !important;
 }
-@media (width < 480px) {
-  .testimonialContainer{
-    width: 90% !important;
+
+.sliderWrapper .slick-track {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.sliderWrapper .slick-slide {
+  display: flex !important;
+  justify-content: center !important;
+  float: none !important;
+}
+
+.sliderWrapper .slick-slide > div {
+  display: flex !important;
+  justify-content: center !important;
+}
+.sliderWrapper.slick-initialized.slick-slider .slick-track {
+  justify-content: center !important;
+  transform: none !important;
+}
+.slick-track{
+  display: flex;
+  justify-content: center;
+}
+.sliderWrapper.slick-initialized.slick-slider .slick-track {
+  justify-content: center !important;
+  transform: none !important;
+}
+@media (width < 576px) {
+  .playbtn {
+    width: 70px;
+    height: 70px;
+    padding: 23px;
+    padding-top: 15px;
   }
 }

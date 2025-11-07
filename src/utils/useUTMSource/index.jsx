@@ -5,7 +5,7 @@ export default function useUTMSource() {
     try {
       const params = new URLSearchParams(window.location.search);
 
-      const utmData = {
+      let utmData = {
         utm_source: params.get("utm_source"),
         utm_medium: params.get("utm_medium"),
         utm_campaign: params.get("utm_campaign"),
@@ -48,11 +48,15 @@ export default function useUTMSource() {
           utm_term: "none",
           utm_content: "none",
         };
+      } else {
+        Object.keys(utmData).forEach((key) => {
+          if (utmData[key] == null) utmData[key] = "";
+        });
       }
 
       Object.entries(utmData).forEach(([key, value]) => {
-        if (value && !localStorage.getItem(key)) {
-          localStorage.setItem(key, value ?? "none");
+        if (!localStorage.getItem(key)) {
+          localStorage.setItem(key, value);
         }
       });
     } catch (error) {
