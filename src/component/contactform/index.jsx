@@ -80,7 +80,7 @@ const ContactForm = () => {
               email: values?.email,
               mobile: `91${values?.mobile}`,
               amount: order?.amount / 100,
-              programm_date: "2025-11-08",
+              programm_date: "2025-11-22",
               razorpay_order_id: response.razorpay_order_id
                 ? response.razorpay_order_id
                 : "",
@@ -128,9 +128,9 @@ const ContactForm = () => {
               name: values?.name,
               amount: 99,
               programm_name: "2-hour Decoding of Practice masterclass",
-              schedule: "Saturday, Nov 8, 2025 10:30 AM – 12:30 PM IST",
+              schedule: "Saturday, Nov 22, 2025 10:30 AM – 12:30 PM IST",
               platform: "Google Meet",
-              link_date: "Friday, 7 Nov",
+              link_date: "Friday, 21 Nov",
             };
 
             handleWhatsappMessage(
