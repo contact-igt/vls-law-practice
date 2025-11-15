@@ -6,12 +6,12 @@ import Title from "@/common/Title";
 import { HomePage } from "@/constants/Home";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
+// import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
 import { Popup } from "@/common/Popup";
 
 const ContactForm = () => {
   const router = useRouter();
-  const { mutate: registerMutate } = AcademyRegisterQuery();
+  // const { mutate: registerMutate } = AcademyRegisterQuery();
   const [isLoading, setisLoading] = useState(false);
 
   const Formik = useFormik({
@@ -26,9 +26,11 @@ const ContactForm = () => {
       email: Yup.string()
         .required("Email required")
         .email("Enter Valid Email")
-        .test((value) => {
-          return value === value.toLocaleLowerCase();
-        }),
+        .test(
+          "is-lowercase",
+          "Email must be lowercase",
+          (value) => !value || value === value.toLowerCase()
+        ),
       mobile: Yup.string()
         .required("Mobile required")
         .matches(/^[0-9]+$/, "Invalid Mobile No")
@@ -101,28 +103,35 @@ const ContactForm = () => {
               utm_content: localStorage.getItem("utm_content"),
             };
 
-            registerMutate(
-              { value: apiPayload },
-              {
-                onSuccess: () => {
-                  const params = new URLSearchParams();
-                  Object.keys(apiPayload).forEach((key) => {
-                    params.append(key, apiPayload[key]);
-                  });
-                  resetForm();
-                  afterRegisterSuccessufull(formData);
-                  handleGoogleSheetForm(params);
-                },
-              },
-              {
-                onError: () => {
-                  setisLoading(false);
-                  resetForm();
-                  router.replace("/error");
-                },
-              }
-            );
+            // registerMutate(
+            //   { value: apiPayload },
+            //   {
+            //     onSuccess: () => {
+            //       const params = new URLSearchParams();
+            //       Object.keys(apiPayload).forEach((key) => {
+            //         params.append(key, apiPayload[key]);
+            //       });
+            //       resetForm();
+            //       afterRegisterSuccessufull(formData);
+            //       handleGoogleSheetForm(params);
+            //     },
+            //   },
+            //   {
+            //     onError: () => {
+            //       setisLoading(false);
+            //       resetForm();
+            //       router.replace("/error");
+            //     },
+            //   }
+            // );
 
+            const params = new URLSearchParams();
+            Object.keys(apiPayload).forEach((key) => {
+              params.append(key, apiPayload[key]);
+            });
+            resetForm();
+            afterRegisterSuccessufull(formData);
+            handleGoogleSheetForm(params);
             const whatsappPayload = {
               phone: `91${values?.mobile}`,
               name: values?.name,
@@ -132,7 +141,6 @@ const ContactForm = () => {
               platform: "Google Meet",
               link_date: "Friday, 21 Nov",
             };
-
             handleWhatsappMessage(
               whatsappPayload?.phone,
               whatsappPayload?.name,
@@ -266,7 +274,7 @@ const ContactForm = () => {
             <label>Name</label>
             <input
               type="text"
-              class="form-control"
+              className="form-control"
               placeholder="Name"
               {...Formik.getFieldProps("name")}
             />
@@ -281,7 +289,7 @@ const ContactForm = () => {
             </label>
             <input
               type="text"
-              class="form-control"
+              className="form-control"
               placeholder="Email"
               {...Formik.getFieldProps("email")}
             />
@@ -297,7 +305,7 @@ const ContactForm = () => {
             <div className="position-relative">
               <input
                 type="text"
-                class={`${styles.inputmobile} form-control `}
+                className={`${styles.inputmobile} form-control `}
                 placeholder="Mobile"
                 {...Formik.getFieldProps("mobile")}
               />
