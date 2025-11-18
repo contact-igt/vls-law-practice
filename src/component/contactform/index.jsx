@@ -137,9 +137,9 @@ const ContactForm = () => {
               name: values?.name,
               amount: 99,
               programm_name: "2-hour Decoding of Practice masterclass",
-              schedule: "Saturday, Nov 22, 2025 10:30 AM – 12:30 PM IST",
+              schedule: "Sunday, Nov 30, 2025 6:00 PM – 8:00 PM IST",
               platform: "Google Meet",
-              link_date: "Friday, 21 Nov",
+              link_date: "Saturday, 29 Nov",
             };
             handleWhatsappMessage(
               whatsappPayload?.phone,
