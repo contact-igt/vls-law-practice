@@ -4,7 +4,7 @@ export const HomePage = {
       titlebold: "Decoding of Practice",
       title: " — 2 Hour Masterclass",
       desc: "From classroom theory to real-world practice in 120 minutes—courtroom flow, drafting basics, filing/e-Courts, client intake, and your 30-day action plan.",
-      time: "Sunday, Nov 30, 2025 6:00 PM – 8:00 PM IST",
+      time: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
     },
 
     points: [
@@ -34,7 +34,7 @@ export const HomePage = {
   fast_fact: [
     {
       id: 1,
-      value: "Sunday, Nov 30, 2025 6:00 PM – 8:00 PM IST",
+      value: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
       icon: "calendar-clock",
     },
     {
