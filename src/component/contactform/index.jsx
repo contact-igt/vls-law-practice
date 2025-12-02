@@ -82,7 +82,7 @@ const ContactForm = () => {
               email: values?.email,
               mobile: `91${values?.mobile}`,
               amount: order?.amount / 100,
-              programm_date: "2025-11-30",
+              programm_date: "2025-12-14",
               razorpay_order_id: response.razorpay_order_id
                 ? response.razorpay_order_id
                 : "",
