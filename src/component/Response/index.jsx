@@ -10,7 +10,7 @@ const Response = () => {
   const issuccess = query.response === "thank-you";
 
   useEffect(() => {
-    setuserDeatil(JSON.parse(localStorage.getItem("PaymentDeatls")));
+    setuserDeatil(JSON.parse(localStorage.getItem("PaymentDetails")));
   }, []);
 
   return (

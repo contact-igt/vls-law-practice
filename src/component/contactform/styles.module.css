@@ -89,16 +89,15 @@
         padding: 20px 10px;
     }
 
-    .loadingPopup h4 {
+    .loadingPopup h4{
         font-size: 22px;
     }
 
-    .loadingPopup p {
+    .loadingPopup p{
         margin: 20px;
     }
 
-    .loadingPopup p,
-    .loadingPopup h6 {
+    .loadingPopup p , .loadingPopup h6{
         font-size: 15px;
     }
 
