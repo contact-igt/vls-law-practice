@@ -9,155 +9,32 @@ import { useState } from "react";
 import { Popup } from "@/common/Popup";
 import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
 
+// --------------------------------------
+// UNIVERSAL RETRY FUNCTION
+// --------------------------------------
+async function retryRequest(fn, retries = 5, delay = 1500) {
+  try {
+    return await fn();
+  } catch (err) {
+    console.error(`Retry failed (${retries} left):`, err);
+
+    if (retries <= 1) throw err;
+
+    await new Promise((res) => setTimeout(res, delay));
+    return retryRequest(fn, retries - 1, delay);
+  }
+}
+
 const ContactForm = () => {
   const router = useRouter();
   const { mutate: registerMutate } = AcademyRegisterQuery();
   const [isLoading, setisLoading] = useState(false);
 
-  // Test Razorpay Process
-
-  // const Formik = useFormik({
-  //   initialValues: {
-  //     name: "",
-  //     email: "",
-  //     mobile: "",
-  //   },
-
-  //   validationSchema: Yup.object().shape({
-  //     name: Yup.string().matches(/^[a-zA-Z ]*$/, "Invalid name"),
-  //     email: Yup.string()
-  //       .required("Email required")
-  //       .email("Enter Valid Email")
-  //       .test(
-  //         "is-lowercase",
-  //         "Email must be lowercase",
-  //         (value) => !value || value === value.toLowerCase()
-  //       ),
-  //     mobile: Yup.string()
-  //       .required("Mobile required")
-  //       .matches(/^[0-9]+$/, "Invalid Mobile No")
-  //       .min(10, "Invalid Mobile No")
-  //       .max(10, "Invalid Mobile No"),
-  //   }),
-
-  //   onSubmit: async (values, { resetForm }) => {
-  //     const options = {
-  //       key: "rzp_test_Rp9qsQqTbbhyj6",
-  //       amount: 117 * 100,
-  //       currency: "INR",
-  //       name: values?.name,
-  //       description: `${HomePage?.razorpay?.title} (99 + 18% Tax = ₹117)`,
-
-  //       handler: async (response) => {
-  //         if (!response?.razorpay_payment_id) {
-  //           router.replace("/error");
-  //           return setisLoading(false);
-  //         }
-
-  //         setisLoading(true);
-
-  //         const ipResponse = await fetch("https://api.ipify.org?format=json");
-  //         const ipData = await ipResponse.json();
-
-  //         const formData = {
-  //           Name: values?.name,
-  //           Email: values?.email,
-  //           Mobile: `+91${values?.mobile}`,
-  //           Amount: 177,
-  //           Razorpay_Transaction_Id: response?.razorpay_payment_id,
-  //           Payment_Status: "Paid",
-  //         };
-
-  //         const apiPayload = {
-  //           name: values?.name || "",
-  //           email: values?.email,
-  //           mobile: `+91${values?.mobile}`,
-  //           amount: 117,
-  //           programm_date: "2025-12-14",
-  //           razorpay_payment_id: response.razorpay_payment_id || "",
-  //           payment_status: "paid",
-  //           captured: response.captured || "",
-  //           page_name: "decoding-of-law-practice",
-  //           ip_address: ipData.ip,
-  //           utm_source: localStorage.getItem("utm_source"),
-  //           utm_medium: localStorage.getItem("utm_medium"),
-  //           utm_campaign: localStorage.getItem("utm_campaign"),
-  //           utm_term: localStorage.getItem("utm_term"),
-  //           utm_content: localStorage.getItem("utm_content"),
-  //         };
-
-  //         registerMutate(
-  //           { value: apiPayload },
-  //           {
-  //             onSuccess: async () => {
-  //               const whatsappPayload = {
-  //                 phone: `91${values?.mobile}`,
-  //                 name: values?.name,
-  //                 amount: 99,
-  //                 programm_name: "2-hour Decoding of Practice masterclass",
-  //                 schedule: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
-  //                 platform: "Google Meet",
-  //                 link_date: "Saturday, 13 Dec",
-  //               };
-
-  //               await handleWhatsappMessage(
-  //                 whatsappPayload.phone,
-  //                 whatsappPayload.name,
-  //                 whatsappPayload.amount,
-  //                 whatsappPayload.programm_name,
-  //                 whatsappPayload.schedule,
-  //                 whatsappPayload.platform,
-  //                 whatsappPayload.link_date
-  //               );
-
-  //               const params = new URLSearchParams();
-  //               Object.keys(apiPayload).forEach((key) => {
-  //                 params.append(key, apiPayload[key] ?? "");
-  //               });
-
-  //               await handleGoogleSheetForm(params);
-  //               await afterRegisterSuccessufull(formData);
-  //             },
-  //           },
-  //           {
-  //             onError: () => {
-  //               setisLoading(false);
-  //               resetForm();
-  //               router.replace("/error");
-  //             },
-  //           }
-  //         );
-
-  //         resetForm();
-  //       },
-
-  //       prefill: {
-  //         name: values?.name,
-  //         email: values?.email,
-  //         contact: values?.mobile,
-  //       },
-  //       theme: { color: "#b20a0a" },
-  //     };
-
-  //     const razor = new window.Razorpay(options);
-
-  //     razor.on("payment.failed", function () {
-  //       router.replace("/error");
-  //       setisLoading(false);
-  //     });
-
-  //     razor.open();
-  //   },
-  // });
-
-// Live Razorpay Process
-
+  // --------------------------------------
+  // FORMIK & VALIDATION
+  // --------------------------------------
   const Formik = useFormik({
-    initialValues: {
-      name: "",
-      email: "",
-      mobile: "",
-    },
+    initialValues: { name: "", email: "", mobile: "" },
 
     validationSchema: Yup.object().shape({
       name: Yup.string().matches(/^[a-zA-Z ]*$/, "Invalid name"),
@@ -177,73 +54,104 @@ const ContactForm = () => {
     }),
 
     onSubmit: async (values, { resetForm }) => {
-      const resp = await fetch("/api/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: HomePage?.razorpay?.amount }),
-      });
+      try {
+        // --------------------------------------
+        // 1) CREATE RAZORPAY ORDER
+        // --------------------------------------
+        const resp = await fetch("/api/create-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: HomePage?.razorpay?.amount }),
+        });
 
-      const order = await resp.json();
+        const order = await resp.json();
 
-      if (!resp.ok) {
-        console.error("Create order failed", order);
-        setisLoading(false);
-        router.replace("/error");
-        return;
-      }
+        if (!resp.ok) throw new Error("Create order failed");
 
-      const options = {
-        key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: values?.name,
-        order_id: order.id,
-        description: `${HomePage?.razorpay?.title} (99 + 18% Tax = ₹117)`,
+        // --------------------------------------
+        // 2) INITIATE PAYMENT
+        // --------------------------------------
+        const options = {
+          key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+          amount: order.amount,
+          currency: order.currency,
+          name: values?.name,
+          order_id: order.id,
+          description: `${HomePage?.razorpay?.title} (99 + 18% Tax = ₹117)`,
 
-        handler: async (response) => {
-          if (!response?.razorpay_payment_id) {
-            router.replace("/error");
-            return setisLoading(false);
-          }
+          handler: async (response) => {
+            if (!response?.razorpay_payment_id) {
+              router.replace("/error");
+              return setisLoading(false);
+            }
 
-          setisLoading(true);
+            setisLoading(true);
 
-          const ipResponse = await fetch("https://api.ipify.org?format=json");
-          const ipData = await ipResponse.json();
+            // --------------------------------------
+            // GET IP ADDRESS
+            // --------------------------------------
+            const ipData = await (
+              await fetch("https://api.ipify.org?format=json")
+            ).json();
 
-          const formData = {
-            Name: values?.name,
-            Email: values?.email,
-            Mobile: `+91${values?.mobile}`,
-            Amount: order?.amount / 100,
-            Razorpay_Transaction_Id: response?.razorpay_payment_id,
-            Payment_Status: "Paid",
-          };
+            const formData = {
+              Name: values?.name,
+              Email: values?.email,
+              Mobile: `+91${values?.mobile}`,
+              Amount: order?.amount / 100,
+              Razorpay_Transaction_Id: response?.razorpay_payment_id,
+              Payment_Status: "Paid",
+            };
 
-          const apiPayload = {
-            name: values?.name || "",
-            email: values?.email,
-            mobile: `+91${values?.mobile}`,
-            amount: order?.amount / 100,
-            programm_date: "2025-12-14",
-            razorpay_order_id: response.razorpay_order_id || "",
-            razorpay_payment_id: response.razorpay_payment_id || "",
-            razorpay_signature: response.razorpay_signature || "",
-            payment_status: "paid",
-            captured: response.captured || "",
-            page_name: "decoding-of-law-practice",
-            ip_address: ipData.ip,
-            utm_source: localStorage.getItem("utm_source"),
-            utm_medium: localStorage.getItem("utm_medium"),
-            utm_campaign: localStorage.getItem("utm_campaign"),
-            utm_term: localStorage.getItem("utm_term"),
-            utm_content: localStorage.getItem("utm_content"),
-          };
-          registerMutate(
-            { value: apiPayload },
-            {
-              onSuccess: async () => {
-                const whatsappPayload = {
+            // --------------------------------------
+            // API PAYLOAD
+            // --------------------------------------
+            const apiPayload = {
+              name: values?.name,
+              email: values?.email,
+              mobile: `+91${values?.mobile}`,
+              amount: order?.amount / 100,
+              programm_date: "2025-12-14",
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              payment_status: "paid",
+              captured: response.captured || "",
+              page_name: "decoding-of-law-practice",
+              ip_address: ipData.ip,
+              utm_source: localStorage.getItem("utm_source"),
+              utm_medium: localStorage.getItem("utm_medium"),
+              utm_campaign: localStorage.getItem("utm_campaign"),
+              utm_term: localStorage.getItem("utm_term"),
+              utm_content: localStorage.getItem("utm_content"),
+            };
+
+            // --------------------------------------
+            // 3) REGISTER LEAD (RETRY)
+            // --------------------------------------
+            await retryRequest(
+              () =>
+                new Promise((resolve, reject) => {
+                  registerMutate(
+                    { value: apiPayload },
+                    {
+                      onSuccess: resolve,
+                      onError: reject,
+                    }
+                  );
+                }),
+              5,
+              1500
+            );
+
+            // --------------------------------------
+            // 4) SEND WHATSAPP MESSAGE (RETRY)
+            // --------------------------------------
+            await retryRequest(async () => {
+              const res = await fetch("/api/sendWhatsapp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
                   phone: `91${values?.mobile}`,
                   name: values?.name,
                   amount: 99,
@@ -251,140 +159,72 @@ const ContactForm = () => {
                   schedule: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
                   platform: "Google Meet",
                   link_date: "Saturday, 13 Dec",
-                };
+                }),
+              });
 
-                await handleWhatsappMessage(
-                  whatsappPayload.phone,
-                  whatsappPayload.name,
-                  whatsappPayload.amount,
-                  whatsappPayload.programm_name,
-                  whatsappPayload.schedule,
-                  whatsappPayload.platform,
-                  whatsappPayload.link_date
-                );
+              const data = await res.json();
 
-                const params = new URLSearchParams();
-                Object.keys(apiPayload).forEach((key) => {
-                  params.append(key, apiPayload[key] ?? "");
-                });
+              if (!data.success) throw new Error("WhatsApp API failed");
+            });
 
-                await handleGoogleSheetForm(params);
-                await afterRegisterSuccessufull(formData);
-              },
-            },
-            {
-              onError: () => {
-                setisLoading(false);
-                resetForm();
-                router.replace("/error");
-              },
-            }
-          );
+            // --------------------------------------
+            // 5) GOOGLE SHEET ENTRY (RETRY)
+            // --------------------------------------
+            const params = new URLSearchParams();
+            Object.keys(apiPayload).forEach((key) =>
+              params.append(key, apiPayload[key] ?? "")
+            );
 
-          resetForm();
-        },
+            await retryRequest(async () => {
+              const res = await fetch(
+                "https://script.google.com/macros/s/AKfycbxobI0C2E-HTczBbbsyWSKNq5U5mXJn6WTBGjHOn48ppKaDTqtKzo7vyHGqpP0OEdmiDg/exec",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                  },
+                  body: params.toString(),
+                }
+              );
+              if (!res.ok) throw new Error("Sheet failed");
+            });
 
-        prefill: {
-          name: values?.name,
-          email: values?.email,
-          contact: values?.mobile,
-        },
-        theme: { color: "#b20a0a" },
-      };
+            // --------------------------------------
+            // 6) FINAL SUCCESS FLOW
+            // --------------------------------------
+            localStorage.setItem("PaymentDetails", JSON.stringify(formData));
+            await new Promise((res) => setTimeout(res, 2000));
 
-      const razor = new window.Razorpay(options);
+            setisLoading(false);
+            router.replace("/thank-you");
+          },
 
-      razor.on("payment.failed", function () {
+          prefill: {
+            name: values?.name,
+            email: values?.email,
+            contact: values?.mobile,
+          },
+          theme: { color: "#b20a0a" },
+        };
+
+        const razor = new window.Razorpay(options);
+
+        razor.on("payment.failed", function () {
+          router.replace("/error");
+          setisLoading(false);
+        });
+
+        razor.open();
+        resetForm();
+      } catch (err) {
+        console.error("Fatal error:", err);
         router.replace("/error");
-        setisLoading(false);
-      });
-
-      razor.open();
+      }
     },
   });
 
-  const handleGoogleSheetForm = async (formData, retries = 3, delay = 1500) => {
-    try {
-      const res = await fetch(
-        "https://script.google.com/macros/s/AKfycbxobI0C2E-HTczBbbsyWSKNq5U5mXJn6WTBGjHOn48ppKaDTqtKzo7vyHGqpP0OEdmiDg/exec",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: formData.toString(),
-        }
-      );
-      console.log(res);
-      const text = await res.text();
-      console.log("Google Sheet Response:", text);
-
-      if (res.ok) {
-        return true;
-      } else {
-        throw new Error("Sheet responded with non-OK");
-      }
-    } catch (err) {
-      console.error(
-        `Google Sheet attempt failed. Retries left: ${retries}`,
-        err
-      );
-
-      if (retries <= 1) {
-        console.error("Google Sheet failed permanently!");
-        return false;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      return handleGoogleSheetForm(formData, retries - 1, delay);
-    }
-  };
-
-  const afterRegisterSuccessufull = async (formData) => {
-    localStorage.setItem("PaymentDetails", JSON.stringify(formData));
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setisLoading(false);
-    router.replace("/thank-you");
-  };
-
-  const handleWhatsappMessage = async (
-    phone_value,
-    name_value,
-    amount_value,
-    programm_name_value,
-    schedule_value,
-    platform_value,
-    link_date_value
-  ) => {
-    try {
-      const res = await fetch("/api/sendWhatsapp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone: phone_value,
-          name: name_value || "Student",
-          amount: amount_value,
-          programm_name: programm_name_value,
-          schedule: schedule_value,
-          platform: platform_value,
-          link_date: link_date_value,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        console.error("WhatsApp Error:", data.error);
-      }
-    } catch (err) {
-      console.error("WhatsApp Fetch Error:", err);
-    }
-  };
-
-  const handleTogglecontactForm = () => {
-    setisLoading(!isLoading);
-  };
-
   return (
-    <>
+   <>
       <div className={styles?.formcardbottom} id="contact_form">
         <form
           id="contactForm"
