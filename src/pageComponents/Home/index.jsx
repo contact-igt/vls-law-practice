@@ -21,7 +21,7 @@ const HomePageComponent = () => {
   };
 
   useEffect(() => {
-    localStorage.removeItem("PaymentDeatls");
+    localStorage.removeItem("PaymentDetails");
   }, []);
 
   return (

@@ -6,13 +6,15 @@ import Title from "@/common/Title";
 import { HomePage } from "@/constants/Home";
 import { useRouter } from "next/router";
 import { useState } from "react";
-// import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
 import { Popup } from "@/common/Popup";
+import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
 
 const ContactForm = () => {
   const router = useRouter();
-  // const { mutate: registerMutate } = AcademyRegisterQuery();
+  const { mutate: registerMutate } = AcademyRegisterQuery();
   const [isLoading, setisLoading] = useState(false);
+
+  // Test Razorpay Process
 
   // const Formik = useFormik({
   //   initialValues: {
@@ -39,226 +41,116 @@ const ContactForm = () => {
   //   }),
 
   //   onSubmit: async (values, { resetForm }) => {
-  //     const resp = await fetch("/api/create-order", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ amount: HomePage?.razorpay?.amount }), // rupees
+  //     const options = {
+  //       key: "rzp_test_Rp9qsQqTbbhyj6",
+  //       amount: 117 * 100,
+  //       currency: "INR",
+  //       name: values?.name,
+  //       description: `${HomePage?.razorpay?.title} (99 + 18% Tax = ₹117)`,
+
+  //       handler: async (response) => {
+  //         if (!response?.razorpay_payment_id) {
+  //           router.replace("/error");
+  //           return setisLoading(false);
+  //         }
+
+  //         setisLoading(true);
+
+  //         const ipResponse = await fetch("https://api.ipify.org?format=json");
+  //         const ipData = await ipResponse.json();
+
+  //         const formData = {
+  //           Name: values?.name,
+  //           Email: values?.email,
+  //           Mobile: `+91${values?.mobile}`,
+  //           Amount: 177,
+  //           Razorpay_Transaction_Id: response?.razorpay_payment_id,
+  //           Payment_Status: "Paid",
+  //         };
+
+  //         const apiPayload = {
+  //           name: values?.name || "",
+  //           email: values?.email,
+  //           mobile: `+91${values?.mobile}`,
+  //           amount: 117,
+  //           programm_date: "2025-12-14",
+  //           razorpay_payment_id: response.razorpay_payment_id || "",
+  //           payment_status: "paid",
+  //           captured: response.captured || "",
+  //           page_name: "decoding-of-law-practice",
+  //           ip_address: ipData.ip,
+  //           utm_source: localStorage.getItem("utm_source"),
+  //           utm_medium: localStorage.getItem("utm_medium"),
+  //           utm_campaign: localStorage.getItem("utm_campaign"),
+  //           utm_term: localStorage.getItem("utm_term"),
+  //           utm_content: localStorage.getItem("utm_content"),
+  //         };
+
+  //         registerMutate(
+  //           { value: apiPayload },
+  //           {
+  //             onSuccess: async () => {
+  //               const whatsappPayload = {
+  //                 phone: `91${values?.mobile}`,
+  //                 name: values?.name,
+  //                 amount: 99,
+  //                 programm_name: "2-hour Decoding of Practice masterclass",
+  //                 schedule: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
+  //                 platform: "Google Meet",
+  //                 link_date: "Saturday, 13 Dec",
+  //               };
+
+  //               await handleWhatsappMessage(
+  //                 whatsappPayload.phone,
+  //                 whatsappPayload.name,
+  //                 whatsappPayload.amount,
+  //                 whatsappPayload.programm_name,
+  //                 whatsappPayload.schedule,
+  //                 whatsappPayload.platform,
+  //                 whatsappPayload.link_date
+  //               );
+
+  //               const params = new URLSearchParams();
+  //               Object.keys(apiPayload).forEach((key) => {
+  //                 params.append(key, apiPayload[key] ?? "");
+  //               });
+
+  //               await handleGoogleSheetForm(params);
+  //               await afterRegisterSuccessufull(formData);
+  //             },
+  //           },
+  //           {
+  //             onError: () => {
+  //               setisLoading(false);
+  //               resetForm();
+  //               router.replace("/error");
+  //             },
+  //           }
+  //         );
+
+  //         resetForm();
+  //       },
+
+  //       prefill: {
+  //         name: values?.name,
+  //         email: values?.email,
+  //         contact: values?.mobile,
+  //       },
+  //       theme: { color: "#b20a0a" },
+  //     };
+
+  //     const razor = new window.Razorpay(options);
+
+  //     razor.on("payment.failed", function () {
+  //       router.replace("/error");
+  //       setisLoading(false);
   //     });
 
-  //     const order = await resp.json();
-
-  //     console.log("Order response:", order);
-
-  //     if (!resp.ok) {
-  //       console.error("Create order failed", order);
-  //       setisLoading(false);
-  //       router.replace("/error");
-  //       return;
-  //     } else {
-  //       const options = {
-  //         key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-  //         amount: order.amount,
-  //         currency: order.currency,
-  //         name: values?.name,
-  //         order_id: order.id,
-  //         description: `${HomePage?.razorpay?.title} (99 + 18% Tax = ₹117)`,
-
-  //         handler: async (response) => {
-
-  //           if (response?.razorpay_payment_id) {
-
-  //             setisLoading(true);
-
-  //             const ipResponse = await fetch(
-  //               "https://api.ipify.org?format=json"
-  //             );
-  //             const ipData = await ipResponse.json();
-
-  //             const formData = {
-  //               Name: values?.name,
-  //               Email: values?.email,
-  //               Mobile: `91${values?.mobile}`,
-  //               Amount: order?.amount / 100,
-  //               Razorpay_Transaction_Id: response?.razorpay_payment_id,
-  //               Payment_Status: "Paid",
-  //             };
-
-  //             const apiPayload = {
-  //               name: values?.name ? values?.name : "",
-  //               email: values?.email,
-  //               mobile: `91${values?.mobile}`,
-  //               amount: order?.amount / 100,
-  //               programm_date: "2025-12-14",
-  //               razorpay_order_id: response.razorpay_order_id
-  //                 ? response.razorpay_order_id
-  //                 : "",
-  //               razorpay_payment_id: response.razorpay_payment_id
-  //                 ? response.razorpay_payment_id
-  //                 : "",
-  //               razorpay_signature: response.razorpay_signature
-  //                 ? response.razorpay_signature
-  //                 : "",
-  //               payment_status: "paid",
-  //               captured: response.captured ? response.captured : "",
-  //               page_name: "decoding-of-law-practice",
-  //               ip_address: ipData.ip,
-  //               utm_source: localStorage.getItem("utm_source"),
-  //               utm_medium: localStorage.getItem("utm_medium"),
-  //               utm_campaign: localStorage.getItem("utm_campaign"),
-  //               utm_term: localStorage.getItem("utm_term"),
-  //               utm_content: localStorage.getItem("utm_content"),
-  //             };
-
-  //             // registerMutate(
-  //             //   { value: apiPayload },
-  //             //   {
-  //             //     onSuccess: () => {
-  //             //       const params = new URLSearchParams();
-  //             //       Object.keys(apiPayload).forEach((key) => {
-  //             //         params.append(key, apiPayload[key]);
-  //             //       });
-  //             //       handleGoogleSheetForm(params);
-  //             //       afterRegisterSuccessufull(formData);
-  //             //       resetForm();
-  //             //     },
-  //             //   },
-  //             //   {
-  //             //     onError: () => {
-  //             //       setisLoading(false);
-  //             //       resetForm();
-  //             //       router.replace("/error");
-  //             //     },
-  //             //   }
-  //             // );
-
-  //             const params = new URLSearchParams();
-  //             Object.keys(apiPayload).forEach((key) => {
-  //               params.append(key, apiPayload[key]);
-  //             });
-  //             handleGoogleSheetForm(params);
-  //             afterRegisterSuccessufull(formData);
-  //             resetForm();
-
-  //             const whatsappPayload = {
-  //               phone: `91${values?.mobile}`,
-  //               name: values?.name,
-  //               amount: 99,
-  //               programm_name: "2-hour Decoding of Practice masterclass",
-  //               schedule: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
-  //               platform: "Google Meet",
-  //               link_date: "Saturday, 13 Dec",
-  //             };
-
-  //             handleWhatsappMessage(
-  //               whatsappPayload?.phone,
-  //               whatsappPayload?.name,
-  //               whatsappPayload?.amount,
-  //               whatsappPayload?.programm_name,
-  //               whatsappPayload?.schedule,
-  //               whatsappPayload?.platform,
-  //               whatsappPayload?.link_date
-  //             );
-  //           } else {
-  //             router.replace("/error");
-  //             setisLoading(false);
-  //           }
-  //         },
-  //         prefill: {
-  //           name: values?.name,
-  //           email: values?.email,
-  //           contact: values?.mobile,
-  //         },
-  //         theme: { color: "#b20a0a" },
-  //       };
-
-  //       const razor = new window.Razorpay(options);
-
-  //       razor.on("payment.failed", function () {
-  //         router.replace("/error");
-  //         setisLoading(false);
-  //       });
-
-  //       razor.open();
-  //     }
+  //     razor.open();
   //   },
   // });
 
-  // const handleGoogleSheetForm = async (formData) => {
-  //   try {
-  //     const sheetRes = await fetch(
-  //       "https://script.google.com/macros/s/AKfycbxobI0C2E-HTczBbbsyWSKNq5U5mXJn6WTBGjHOn48ppKaDTqtKzo7vyHGqpP0OEdmiDg/exec",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/x-www-form-urlencoded",
-  //         },
-  //         body: formData.toString(),
-  //       }
-  //     );
-  //   } catch (err) {
-  //     console.error("Fetch error:", err);
-  //     console.log("Server error. Please try again later.");
-  //   }
-  // };
-
-  // const afterRegisterSuccessufull = (formData) => {
-  //   setTimeout(() => {
-  //     router.replace("/thank-you");
-  //     localStorage.setItem("PaymentDeatls", JSON.stringify(formData));
-  //     setisLoading(false);
-  //   }, 5000);
-  // };
-
-  // const handleWhatsappMessage = async (
-  //   phone_value,
-  //   name_value,
-  //   amount_value,
-  //   programm_name_value,
-  //   schedule_value,
-  //   platform_value,
-  //   link_date_value
-  // ) => {
-  //   const apiPayload = {
-  //     phone: phone_value,
-  //     name: name_value ? name_value : "Student",
-  //     amount: amount_value,
-  //     programm_name: programm_name_value,
-  //     schedule: schedule_value,
-  //     platform: platform_value,
-  //     link_date: link_date_value,
-  //   };
-
-  //   try {
-  //     const res = await fetch("/api/sendWhatsapp", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(apiPayload),
-  //     });
-
-  //     let data;
-
-  //     try {
-  //       data = await res.json();
-  //     } catch (jsonErr) {
-  //       const text = await res.text();
-  //       console.error("Server returned non-JSON response:", text);
-  //       console.log("Server returned unexpected response. Check console.");
-  //       return;
-  //     }
-
-  //     if (data.success) {
-  //       console.log(`WhatsApp confirmation sent to ${phone_value}!`);
-  //     } else {
-  //       console.error("Error sending message:", data.error);
-  //       console.log(
-  //         "Error sending WhatsApp message. Check console for details."
-  //       );
-  //     }
-  //   } catch (err) {
-  //     console.error("Fetch error:", err);
-  //     console.log("Server error. Please try again later.");
-  //   }
-  // };
+// Live Razorpay Process
 
   const Formik = useFormik({
     initialValues: {
@@ -347,35 +239,48 @@ const ContactForm = () => {
             utm_term: localStorage.getItem("utm_term"),
             utm_content: localStorage.getItem("utm_content"),
           };
+          registerMutate(
+            { value: apiPayload },
+            {
+              onSuccess: async () => {
+                const whatsappPayload = {
+                  phone: `91${values?.mobile}`,
+                  name: values?.name,
+                  amount: 99,
+                  programm_name: "2-hour Decoding of Practice masterclass",
+                  schedule: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
+                  platform: "Google Meet",
+                  link_date: "Saturday, 13 Dec",
+                };
 
-          const params = new URLSearchParams();
-          Object.keys(apiPayload).forEach((key) => {
-            params.append(key, apiPayload[key]);
-          });
+                await handleWhatsappMessage(
+                  whatsappPayload.phone,
+                  whatsappPayload.name,
+                  whatsappPayload.amount,
+                  whatsappPayload.programm_name,
+                  whatsappPayload.schedule,
+                  whatsappPayload.platform,
+                  whatsappPayload.link_date
+                );
 
-          await handleGoogleSheetForm(params);
+                const params = new URLSearchParams();
+                Object.keys(apiPayload).forEach((key) => {
+                  params.append(key, apiPayload[key] ?? "");
+                });
 
-          const whatsappPayload = {
-            phone: `91${values?.mobile}`,
-            name: values?.name,
-            amount: 99,
-            programm_name: "2-hour Decoding of Practice masterclass",
-            schedule: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
-            platform: "Google Meet",
-            link_date: "Saturday, 13 Dec",
-          };
-
-          await handleWhatsappMessage(
-            whatsappPayload.phone,
-            whatsappPayload.name,
-            whatsappPayload.amount,
-            whatsappPayload.programm_name,
-            whatsappPayload.schedule,
-            whatsappPayload.platform,
-            whatsappPayload.link_date
+                await handleGoogleSheetForm(params);
+                await afterRegisterSuccessufull(formData);
+              },
+            },
+            {
+              onError: () => {
+                setisLoading(false);
+                resetForm();
+                router.replace("/error");
+              },
+            }
           );
 
-          afterRegisterSuccessufull(formData);
           resetForm();
         },
 
@@ -398,9 +303,9 @@ const ContactForm = () => {
     },
   });
 
-  const handleGoogleSheetForm = async (formData) => {
+  const handleGoogleSheetForm = async (formData, retries = 3, delay = 1500) => {
     try {
-      await fetch(
+      const res = await fetch(
         "https://script.google.com/macros/s/AKfycbxobI0C2E-HTczBbbsyWSKNq5U5mXJn6WTBGjHOn48ppKaDTqtKzo7vyHGqpP0OEdmiDg/exec",
         {
           method: "POST",
@@ -408,17 +313,36 @@ const ContactForm = () => {
           body: formData.toString(),
         }
       );
+      console.log(res);
+      const text = await res.text();
+      console.log("Google Sheet Response:", text);
+
+      if (res.ok) {
+        return true;
+      } else {
+        throw new Error("Sheet responded with non-OK");
+      }
     } catch (err) {
-      console.error("Google Sheet Error:", err);
+      console.error(
+        `Google Sheet attempt failed. Retries left: ${retries}`,
+        err
+      );
+
+      if (retries <= 1) {
+        console.error("Google Sheet failed permanently!");
+        return false;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return handleGoogleSheetForm(formData, retries - 1, delay);
     }
   };
 
-  const afterRegisterSuccessufull = (formData) => {
-    setTimeout(() => {
-      router.replace("/thank-you");
-      localStorage.setItem("PaymentDeatls", JSON.stringify(formData));
-      setisLoading(false);
-    }, 500);
+  const afterRegisterSuccessufull = async (formData) => {
+    localStorage.setItem("PaymentDetails", JSON.stringify(formData));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setisLoading(false);
+    router.replace("/thank-you");
   };
 
   const handleWhatsappMessage = async (
