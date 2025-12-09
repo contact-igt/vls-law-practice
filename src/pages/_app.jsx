@@ -6,6 +6,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
+import Preloader from "@/common/Preloader";
 
 export default function App({ Component, pageProps }) {
   useUTMSource();
@@ -15,6 +16,7 @@ export default function App({ Component, pageProps }) {
     <>
       <QueryClientProvider client={queryClient}>
         <SnackbarProvider>
+          <Preloader/>
           <Header />
           <Component {...pageProps} />
           <Footer />
