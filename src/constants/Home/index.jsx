@@ -4,7 +4,7 @@ export const HomePage = {
       titlebold: "Decoding of Practice",
       title: " — 2 Hour Masterclass",
       desc: "From classroom theory to real-world practice in 120 minutes—courtroom flow, drafting basics, filing/e-Courts, client intake, and your 30-day action plan.",
-      time: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
+      time: "Date & time will be announced shortly. Stay tuned!",
     },
 
     points: [
@@ -34,7 +34,7 @@ export const HomePage = {
   fast_fact: [
     {
       id: 1,
-      value: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
+      value: "Date & time will be announced shortly. Stay tuned!",
       icon: "calendar-clock",
     },
     {
@@ -120,8 +120,8 @@ export const HomePage = {
   faqs: [
     {
       id: 1,
-      question: "Is it really ₹99?",
-      answer: "Yes. This page is only for the 2-hour masterclass registration.",
+      question: "How much does it cost?",
+      answer: "Pricing will be announced once the date is confirmed. Join the waitlist to be notified first.",
     },
     {
       id: 2,

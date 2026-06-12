@@ -24,7 +24,7 @@ const WhyVls = ({ whyvlsdata, scrollToContactForm }) => {
             </div>
 
             <Button
-              name={"Register Now"}
+              name={"Join Waitlist"}
               scrollToContactForm={scrollToContactForm}
             />
           </div>

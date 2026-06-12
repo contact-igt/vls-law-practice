@@ -6,11 +6,11 @@
 }
 
 .responseIcon {
-    margin-bottom: 20px;
+    margin-bottom: 28px;
 }
 
 .responseIcon img {
-    max-width: 120px;
+    max-width: 130px;
     height: auto;
 }
 
@@ -26,6 +26,10 @@
 
 .successText {
     color: #28a745;
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .errorText {
@@ -39,19 +43,19 @@
 }
 
 .summaryBox {
-    margin: 20px auto;
-    padding: 15px;
-    max-width: 400px;
-    background: #f9f9f9;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    text-align: left;
+    margin: 0 auto;
+    padding: 10px 24px 32px;
+    max-width: 600px;
+    background: transparent;
+    border: none;
+    text-align: center;
 }
 
 .summaryBox p {
     margin: 8px 0;
-    font-size: 0.95rem;
-    color: #333;
+    font-size: 1.15rem;
+    color: #444;
+    line-height: 1.7;
 }
 
 .responseCta a {
@@ -59,19 +63,19 @@
 }
 
 @media (max-width: 768px) {
-    .responseInfo h5 {
-        font-size: 1.3rem;
+    .successText {
+        font-size: 1.8rem;
     }
 
-    .summaryBox {
-        padding: 12px;
+    .summaryBox p {
+        font-size: 1rem;
     }
 
-    .responseIcon img{
-        max-width: 80px;
+    .responseIcon img {
+        max-width: 90px;
     }
 
-    .responseCta a button{
+    .responseCta a button {
         margin: 10px 0px;
     }
 }
