@@ -18,6 +18,7 @@
 .meuntitle h6 {
     font-size: 18px;
     font-weight: 700;
+    line-height: 1.5;
 
 }
 
@@ -66,7 +67,4 @@
     .pricebtn>button , .pricebtn button:hover {
         padding: 10px 20px;
     }
-
-
-
 }

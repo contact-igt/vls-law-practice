@@ -1,3 +1,6 @@
+
+"use client";
+
 import Button from "@/common/Button";
 import styles from "./styles.module.css";
 import { useFormik } from "formik";
@@ -9,227 +12,284 @@ import { useState } from "react";
 import { Popup } from "@/common/Popup";
 import { AcademyRegisterQuery } from "@/hooks/useAcademyTrainingQuery";
 
-// --------------------------------------
-// UNIVERSAL RETRY FUNCTION
-// --------------------------------------
-async function retryRequest(fn, retries = 5, delay = 1500) {
-  try {
-    return await fn();
-  } catch (err) {
-    console.error(`Retry failed (${retries} left):`, err);
-
-    if (retries <= 1) throw err;
-
-    await new Promise((res) => setTimeout(res, delay));
-    return retryRequest(fn, retries - 1, delay);
-  }
-}
-
-const ContactForm = () => {
+const ContactForm = ({ ipAddress }) => {
   const router = useRouter();
   const { mutate: registerMutate } = AcademyRegisterQuery();
-  const [isLoading, setisLoading] = useState(false);
 
-  // --------------------------------------
-  // FORMIK & VALIDATION
-  // --------------------------------------
-  const Formik = useFormik({
-    initialValues: { name: "", email: "", mobile: "" },
+  const [instructionOpen, setInstructionOpen] = useState(false);
+  const [agree, setAgree] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [formValues, setFormValues] = useState(null);
 
-    validationSchema: Yup.object().shape({
+  const getUTM = (key) => {
+    if (typeof window === "undefined") return "";
+    try {
+      return localStorage.getItem(key) || "";
+    } catch {
+      return "";
+    }
+  };
+  // ---------------- FORM ----------------
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      mobile: "",
+    },
+
+    validationSchema: Yup.object({
       name: Yup.string().matches(/^[a-zA-Z ]*$/, "Invalid name"),
       email: Yup.string()
         .required("Email required")
-        .email("Enter Valid Email")
+        .email("Enter valid email")
         .test(
-          "is-lowercase",
+          "lowercase",
           "Email must be lowercase",
-          (value) => !value || value === value.toLowerCase()
+          (v) => !v || v === v.toLowerCase(),
         ),
       mobile: Yup.string()
         .required("Mobile required")
-        .matches(/^[0-9]+$/, "Invalid Mobile No")
-        .min(10, "Invalid Mobile No")
-        .max(10, "Invalid Mobile No"),
+        .matches(/^[0-9]{10}$/, "Invalid mobile number"),
     }),
 
-    onSubmit: async (values, { resetForm }) => {
-      try {
-        // --------------------------------------
-        // 1) CREATE RAZORPAY ORDER
-        // --------------------------------------
-        const resp = await fetch("/api/create-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount: HomePage?.razorpay?.amount }),
-        });
-
-        const order = await resp.json();
-
-        if (!resp.ok) throw new Error("Create order failed");
-
-        // --------------------------------------
-        // 2) INITIATE PAYMENT
-        // --------------------------------------
-        const options = {
-          key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-          amount: order.amount,
-          currency: order.currency,
-          name: values?.name,
-          order_id: order.id,
-          description: `${HomePage?.razorpay?.title} (99 + 18% Tax = ₹117)`,
-
-          handler: async (response) => {
-            if (!response?.razorpay_payment_id) {
-              router.replace("/error");
-              return setisLoading(false);
-            }
-
-            setisLoading(true);
-
-            // --------------------------------------
-            // GET IP ADDRESS
-            // --------------------------------------
-            const ipData = await (
-              await fetch("https://api.ipify.org?format=json")
-            ).json();
-
-            const formData = {
-              Name: values?.name,
-              Email: values?.email,
-              Mobile: `+91${values?.mobile}`,
-              Amount: order?.amount / 100,
-              Razorpay_Transaction_Id: response?.razorpay_payment_id,
-              Payment_Status: "Paid",
-            };
-
-            // --------------------------------------
-            // API PAYLOAD
-            // --------------------------------------
-            const apiPayload = {
-              name: values?.name,
-              email: values?.email,
-              mobile: `+91${values?.mobile}`,
-              amount: order?.amount / 100,
-              programm_date: "2025-12-14",
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              payment_status: "paid",
-              captured: response.captured || "",
-              page_name: "decoding-of-law-practice",
-              ip_address: ipData.ip,
-              utm_source: localStorage.getItem("utm_source"),
-              utm_medium: localStorage.getItem("utm_medium"),
-              utm_campaign: localStorage.getItem("utm_campaign"),
-              utm_term: localStorage.getItem("utm_term"),
-              utm_content: localStorage.getItem("utm_content"),
-            };
-
-            // --------------------------------------
-            // 3) REGISTER LEAD (RETRY)
-            // --------------------------------------
-            await retryRequest(
-              () =>
-                new Promise((resolve, reject) => {
-                  registerMutate(
-                    { value: apiPayload },
-                    {
-                      onSuccess: resolve,
-                      onError: reject,
-                    }
-                  );
-                }),
-              5,
-              1500
-            );
-
-            // --------------------------------------
-            // 4) SEND WHATSAPP MESSAGE (RETRY)
-            // --------------------------------------
-            await retryRequest(async () => {
-              const res = await fetch("/api/sendWhatsapp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  phone: `91${values?.mobile}`,
-                  name: values?.name,
-                  amount: 99,
-                  programm_name: "2-hour Decoding of Practice masterclass",
-                  schedule: "Sunday, Dec 14, 2025 10:30 AM – 12:30 PM IST",
-                  platform: "Google Meet",
-                  link_date: "Saturday, 13 Dec",
-                }),
-              });
-
-              const data = await res.json();
-
-              if (!data.success) throw new Error("WhatsApp API failed");
-            });
-
-            // --------------------------------------
-            // 5) GOOGLE SHEET ENTRY (RETRY)
-            // --------------------------------------
-            const params = new URLSearchParams();
-            Object.keys(apiPayload).forEach((key) =>
-              params.append(key, apiPayload[key] ?? "")
-            );
-
-            await retryRequest(async () => {
-              const res = await fetch(
-                "https://script.google.com/macros/s/AKfycbxobI0C2E-HTczBbbsyWSKNq5U5mXJn6WTBGjHOn48ppKaDTqtKzo7vyHGqpP0OEdmiDg/exec",
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                  },
-                  body: params.toString(),
-                }
-              );
-              if (!res.ok) throw new Error("Sheet failed");
-            });
-
-            // --------------------------------------
-            // 6) FINAL SUCCESS FLOW
-            // --------------------------------------
-            localStorage.setItem("PaymentDetails", JSON.stringify(formData));
-            await new Promise((res) => setTimeout(res, 2000));
-
-            setisLoading(false);
-            router.replace("/thank-you");
-          },
-
-          prefill: {
-            name: values?.name,
-            email: values?.email,
-            contact: values?.mobile,
-          },
-          theme: { color: "#b20a0a" },
-        };
-
-        const razor = new window.Razorpay(options);
-
-        razor.on("payment.failed", function () {
-          router.replace("/error");
-          setisLoading(false);
-        });
-
-        razor.open();
-        resetForm();
-      } catch (err) {
-        console.error("Fatal error:", err);
-        router.replace("/error");
-      }
+    onSubmit: (values) => {
+      setFormValues(values);
+      setAgree(false);
+      submitWaitlist(values);
     },
   });
 
+  // ---- RAZORPAY BLOCK (commented out — restore to re-enable payment flow) ----
+  // const openRazorpay = async () => {
+  //   if (!formValues) return;
+  //
+  //   // Payment verification API call
+  //   const resp = await fetch("/api/create-order", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ amount: HomePage?.razorpay?.amount }),
+  //   });
+  //
+  //   const order = await resp.json();
+  //
+  //   if (!resp.ok) {
+  //     router.replace("/error");
+  //     return;
+  //   }
+  //
+  //   const options = {
+  //     key: process.env.REACT_APP_RAZORPAY_KEY_SECRET,
+  //     amount: order.amount,
+  //     currency: order.currency,
+  //     name: formValues.name,
+  //     order_id: order.id,
+  //     description: `${HomePage?.razorpay?.title} (99 + 18% Tax = ₹117)`,
+  //     notes: {
+  //       name: formValues?.name || "",
+  //       email: formValues?.email || "",
+  //       mobile: formValues?.mobile || "",
+  //       programm_date: "2026-05-09",
+  //       page_name: "decoding-of-practice",
+  //       ip_address: ipAddress || "",
+  //       utm_source: getUTM("utm_source") || "",
+  //       utm_medium: getUTM("utm_medium") || "",
+  //       utm_campaign: getUTM("utm_campaign") || "",
+  //       utm_term: getUTM("utm_term") || "",
+  //       utm_content: getUTM("utm_content") || "",
+  //     },
+  //
+  //     // Razorpay payment handler callback
+  //     handler: async (response) => {
+  //       if (!response?.razorpay_payment_id) {
+  //         router.replace("/error");
+  //         return;
+  //       }
+  //
+  //       setProcessing(true);
+  //
+  //       const apiPayload = {
+  //         name: formValues?.name || "",
+  //         email: formValues?.email,
+  //         mobile: `+91${formValues?.mobile}`,
+  //         amount: order?.amount / 100,
+  //         programm_date: "2026-05-09",
+  //         razorpay_order_id: response.razorpay_order_id || "",
+  //         razorpay_payment_id: response.razorpay_payment_id || "",
+  //         razorpay_signature: response.razorpay_signature || "",
+  //         payment_status: "paid",
+  //         page_name: "decoding-of-practice",
+  //         ip_address: ipAddress || "",
+  //         utm_source: getUTM("utm_source"),
+  //         utm_medium: getUTM("utm_medium"),
+  //         utm_campaign: getUTM("utm_campaign"),
+  //         utm_term: getUTM("utm_term"),
+  //         utm_content: getUTM("utm_content"),
+  //       };
+  //
+  //       await handleWhatsappMessage(
+  //         `91${formValues.mobile}`,
+  //         formValues.name,
+  //         99,
+  //         "2-hour Decoding of Practice masterclass",
+  //         "Saturday, May 09, 2026 10:30 AM – 12:30 PM IST",
+  //         "Google Meet",
+  //         "Friday, 08 May",
+  //       );
+  //
+  //       console.log("Registration Payload:", apiPayload);
+  //       await registerUserToDB(apiPayload);
+  //
+  //       const params = new URLSearchParams();
+  //       Object.keys(apiPayload).forEach((key) =>
+  //         params.append(key, apiPayload[key] ?? ""),
+  //       );
+  //       await handleGoogleSheetForm(params);
+  //
+  //       await safeSetPaymentDetails(apiPayload);
+  //       router.replace("/thank-you");
+  //     },
+  //
+  //     prefill: {
+  //       name: formValues.name,
+  //       email: formValues.email,
+  //       contact: formValues.mobile,
+  //     },
+  //
+  //     theme: { color: "#b20a0a" },
+  //   };
+  //
+  //   // new Razorpay(options) — initialize and open payment modal
+  //   const razor = new window.Razorpay(options);
+  //   razor.on("payment.failed", () => {
+  //     router.replace("/error");
+  //   });
+  //   razor.open();
+  // };
+  // ---- END RAZORPAY BLOCK ----
+
+  // Waitlist submission — Google Sheet only (active while Razorpay is disabled)
+  const submitWaitlist = async (values) => {
+    const data = values || formValues;
+    if (!data) return;
+
+    setProcessing(true);
+
+    const waitlistPayload = {
+      name: data?.name || "",
+      email: data?.email || "",
+      mobile: `+91${data?.mobile}`,
+      amount: 0,
+      programm_date: "",
+      razorpay_order_id: "",
+      razorpay_payment_id: "",
+      razorpay_signature: "",
+      payment_status: "waitlist",
+      page_name: "decoding-of-practice",
+      ip_address: ipAddress || "",
+      utm_source: getUTM("utm_source"),
+      utm_medium: getUTM("utm_medium"),
+      utm_campaign: getUTM("utm_campaign"),
+      utm_term: getUTM("utm_term"),
+      utm_content: getUTM("utm_content"),
+    };
+
+    const params = new URLSearchParams();
+    Object.keys(waitlistPayload).forEach((key) =>
+      params.append(key, waitlistPayload[key] ?? ""),
+    );
+
+    await handleGoogleSheetForm(params);
+    // await safeSetPaymentDetails(waitlistPayload);
+
+    setProcessing(false);
+    router.replace("/thank-you");
+  };
+
+  const registerUserToDB = (payload) =>
+    new Promise((resolve, reject) => {
+      registerMutate(
+        { value: payload },
+        {
+          onSuccess: resolve,
+          onError: reject,
+        },
+      );
+    });
+
+  const handleWhatsappMessage = async (
+    phone,
+    name,
+    amount,
+    program,
+    schedule,
+    platform,
+    date,
+  ) => {
+    await fetch("/api/sendWhatsapp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone,
+        name,
+        amount,
+        programm_name: program,
+        schedule,
+        platform,
+        link_date: date,
+      }),
+    });
+  };
+
+  const handleGoogleSheetForm = async (formData, retries = 3, delay = 1500) => {
+    try {
+      const res = await fetch(
+        "https://script.google.com/macros/s/AKfycbxobI0C2E-HTczBbbsyWSKNq5U5mXJn6WTBGjHOn48ppKaDTqtKzo7vyHGqpP0OEdmiDg/exec",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formData.toString(),
+        },
+      );
+      console.log(res);
+      const text = await res.text();
+      console.log("Google Sheet Response:", text);
+      if (res.ok) {
+        return true;
+      } else {
+        throw new Error("Sheet responded with non-OK");
+      }
+    } catch (err) {
+      console.error(
+        `Google Sheet attempt failed. Retries left: ${retries}, err `,
+      );
+      if (retries <= 1) {
+        console.error("Google Sheet failed permanently!");
+        return false;
+      }
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return handleGoogleSheetForm(formData, retries - 1, delay);
+    }
+  };
+
+  const safeSetPaymentDetails = async (data) => {
+    if (typeof window === "undefined") return;
+
+    try {
+      const safeData = JSON.stringify(data);
+      localStorage.setItem("PaymentDetails", safeData);
+    } catch (error) {
+      console.error("Failed to store PaymentDetails:", error);
+    }
+  };
+
+  // ---------------- UI ----------------
   return (
-   <>
+    <>
       <div className={styles?.formcardbottom} id="contact_form">
         <form
           id="contactForm"
           className="contact-form"
-          onSubmit={Formik.handleSubmit}
+          onSubmit={formik.handleSubmit}
         >
           <div className={styles.formtitle}>
             <Title
@@ -244,10 +304,10 @@ const ContactForm = () => {
               type="text"
               className="form-control"
               placeholder="Name"
-              {...Formik.getFieldProps("name")}
+              {...formik.getFieldProps("name")}
             />
-            {Formik.touched.name && Formik.errors.name && (
-              <small>{Formik.errors.name}</small>
+            {formik.touched.name && formik.errors.name && (
+              <small style={{ fontSize: "12px" }}>{formik.errors.name}</small>
             )}
           </div>
 
@@ -259,10 +319,10 @@ const ContactForm = () => {
               type="text"
               className="form-control"
               placeholder="Email"
-              {...Formik.getFieldProps("email")}
+              {...formik.getFieldProps("email")}
             />
-            {Formik.touched.email && Formik.errors.email && (
-              <small>{Formik.errors.email}</small>
+            {formik.touched.email && formik.errors.email && (
+              <small style={{ fontSize: "12px" }}>{formik.errors.email}</small>
             )}
           </div>
 
@@ -275,7 +335,7 @@ const ContactForm = () => {
                 type="text"
                 className={`${styles.inputmobile} form-control `}
                 placeholder="Mobile"
-                {...Formik.getFieldProps("mobile")}
+                {...formik.getFieldProps("mobile")}
               />
               <input
                 className={`${styles.inputmobilecode} form-control position-absolute`}
@@ -283,32 +343,77 @@ const ContactForm = () => {
                 value={"+91"}
               />
             </div>
-            {Formik.touched.mobile && Formik.errors.mobile && (
-              <small>{Formik.errors.mobile}</small>
+            {formik.touched.mobile && formik.errors.mobile && (
+              <small style={{ fontSize: "12px" }}>{formik.errors.mobile}</small>
             )}
           </div>
 
-          <div className="mt-5 d-md-flex justify-content-center ">
-            <Button name={"SUBMIT"} isLoading={isLoading} type={"submit"} />
+          <div className={`mt-4 d-md-flex justify-content-center`}>
+            <Button disabled={processing} name={"SUBMIT"} type={"submit"} isLoading={processing} />
           </div>
         </form>
       </div>
 
-      <Popup
-        open={isLoading}
-        onClose={() => {
-          handleTogglecontactForm();
-        }}
-      >
+      <Popup open={instructionOpen} onClose={() => setInstructionOpen(false)}>
         <div className={styles.loadingPopup}>
-          <h4>⚠️ Do Not Close or Refresh</h4>
-          <p>
-            Your payment has been received. We are completing your registration.
-            Please stay on this page until the process is complete.
+          <h4>✅ Confirm Registration</h4>
+
+          <h6>
+            You&apos;re about to join the waitlist for the masterclass. We will
+            notify you as soon as the date is confirmed.
+          </h6>
+
+          <p className="text-danger fw-semibold mt-2">
+            Please do not close or refresh this page while we save your details.
           </p>
-          <h6>⏳ Processing... Please wait.</h6>
+
+          <div className="form-check mt-3 d-flex justify-content-center gap-2">
+            <input
+              type="checkbox"
+              className="form-check-input custom-red-checkbox"
+              checked={agree}
+              onChange={(e) => setAgree(e.target.checked)}
+              id="agree"
+            />
+            <label
+              className="form-check-label text-danger fw-bold"
+              htmlFor="agree"
+              style={{ fontSize: "14px", marginTop: "2px" }}
+            >
+              I understand and agree.
+            </label>
+          </div>
+
+          <div
+            className={`d-flex flex-md-row flex-column flex-column-reverse gap-3 mt-4 ${styles.instructionbtn}`}
+          >
+            <button
+              className="btn btn-secondary"
+              onClick={() => setInstructionOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-danger"
+              disabled={!agree}
+              onClick={() => {
+                setInstructionOpen(false);
+                // submitWaitlist();
+              }}
+            >
+              Join Waitlist
+            </button>
+          </div>
         </div>
       </Popup>
+
+      {/* ⏳ Processing Popup */}
+      {/* <Popup open={processing} onClose={() => setProcessing(false)}>
+        <div className={styles.loadingPopup}>
+          <h4>⏳ Processing Payment</h4>
+          <p>Please wait. Do not close or refresh this page.</p>
+        </div>
+      </Popup> */}
     </>
   );
 };
